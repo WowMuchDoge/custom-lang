@@ -9,4 +9,4 @@ set(PROJECT_SOURCE_DIR ./src)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 
-add_executable(out src/cpp/Token.cpp src/cpp/main.cpp)
+add_executable(out src/cpp/scanner/Token.cpp src/cpp/main.cpp src/cpp/error/ScannerError.cpp)

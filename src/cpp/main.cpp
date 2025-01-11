@@ -1,13 +1,14 @@
 #include <iostream>
 
-#include "Token.hpp"
+#include "scanner/Token.hpp"
+#include "error/ScannerError.hpp"
 
 int main() {
-    Token t(TokenType::AND, "and");
+    Token t(TokenType::AND, 1, 0);
 
     try {
         double hehe = t.TokenToNumber();
-    } catch (const std::exception& e) {
-        std::cout << "Uh oh " << e.what() << std::endl;
+    } catch (ScannerError e) {
+        e.Print();
     }
 }
