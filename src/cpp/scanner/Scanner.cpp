@@ -50,17 +50,36 @@ Token Scanner::ScanToken() {
             case '\0':
                 return makeToken(TokenType::END);
             default: {
-                //     if (std::isdigit(cur)) {
-                //         scanNumber();
-                //     } else if (std::isalpha(cur)) {
-                //         scanIdentifier();
-                //     }
+                    if (std::isdigit(cur)) {
+                        return scanNumber();
+                    } 
+                    // else if (std::isalpha(cur)) {
+                    //     scanIdentifier();
+                    // }
                 throw ScannerError(makeToken(TokenType::UNKNOWN), "Unexpected token \"" + std::string(1, cur) + "\".");
             }
         }
     }
 
     return makeToken(TokenType::END);
+}
+
+Token Scanner::scanNumber() {
+    // m_currentIndex is always the next token to be consumed and 
+    // number that is encountered has already been consumed, so
+    // it must be subtracted by one
+    int startIndex = m_currentIndex - 1;
+
+    while (isDigit(peek())) advance();
+
+    if (peek() == '.') {
+        advance();
+        while (isDigit(peek())) advance();
+    }
+
+    int endIndex = m_currentIndex;
+
+    return Token(TokenType::NUMBER, m_line, m_offset, "", std::stod(m_source.substr(startIndex, endIndex - startIndex)));
 }
 
 char Scanner::peek() {
@@ -85,6 +104,9 @@ void Scanner::skipWhitespace() {
 }
 
 Token Scanner::makeToken(TokenType type) {
-    advance();
     return Token(type, m_line, m_offset);
+}
+
+bool Scanner::isDigit(char c) {
+    return c >= '0' && c <= '9';
 }

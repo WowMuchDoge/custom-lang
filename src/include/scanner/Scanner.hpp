@@ -23,8 +23,10 @@ private:
 
     bool atEnd();
 
-    // Token scanNumber();
+    Token scanNumber();
     // Token scanIdentifier();
+
+    static bool isDigit(char c);
 
     void skipWhitespace();
 

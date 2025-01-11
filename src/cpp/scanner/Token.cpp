@@ -6,19 +6,6 @@
 #include "Constants.hpp"
 #include "error/ScannerError.hpp"
 
-double Token::TokenToNumber() {
-    if (std::isnan(m_value)) {
-        // Seeing if m_literal can be turned into a number
-        try {
-            m_value = std::stod(m_literal);
-        } catch (const std::exception& e) {
-            throw ScannerError(*this, "Cannot convert \"" + m_literal + "\" to a number.");
-        }
-    }
-
-    return m_value;
-}
-
 int Token::GetLine() {
     return m_line;
 }
@@ -36,5 +23,11 @@ TokenType Token::GetType() {
 }
 
 void Token::Print() {
+    if (m_type == TokenType::NUMBER) {
+        std::cout << "[TOKEN NUMBER" << ", " << m_value << "]" << std::endl;
+        return;
+    } else if (m_type == TokenType::STRING) {
+        std::cout << "[TOKEN STRING" << ", " << m_literal << "]" << std::endl;
+    }
     std::cout << "[TOKEN " << ScannerConstants::kTokenNames.at(m_type) << "]" << std::endl;
 }

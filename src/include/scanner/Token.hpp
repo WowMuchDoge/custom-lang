@@ -11,15 +11,14 @@
 
 class Token {
 public:
-    Token(TokenType type, int line, int lineOffset, std::string literal = "") : m_type{type}, m_line{line}, m_lineOffset{line}, m_literal{literal}, m_value{NAN} {
+    Token(TokenType type, int line, int lineOffset, std::string literal = "", double number = NAN) 
+    : m_type{type}, m_line{line}, m_lineOffset{line}, m_literal{literal}, m_value{number} {
         // End is the only non-literal token that does not contain specific text
         if (literal == "" && type != TokenType::END) {
             auto it = ScannerConstants::kTokenStrings.find(type);
             m_literal = it->second;
         }
     }
-
-    double TokenToNumber();
 
     int GetLine();
     int GetOffset();

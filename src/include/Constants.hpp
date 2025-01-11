@@ -54,6 +54,7 @@ enum class TokenType {
     // Misc
     COMMA,
     SEMICOLON,
+    DOUBLE_QUOTE,
     UNKNOWN,
     END
 };
