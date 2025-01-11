@@ -14,14 +14,8 @@ public:
     Token(TokenType type, int line, int lineOffset, std::string literal = "") : m_type{type}, m_line{line}, m_lineOffset{line}, m_literal{literal}, m_value{NAN} {
         // End is the only non-literal token that does not contain specific text
         if (literal == "" && type != TokenType::END) {
-            auto it = ScannerConstants::kTokenNames.find(type);
-
-            // `it` is what end() returns when the element is not in the map
-            if (it == ScannerConstants::kTokenNames.end()) {
-                std::cout << "Token type " << (int)type << " not recognized." << std::endl;
-            } else {
-                m_literal = it->second;
-            }
+            auto it = ScannerConstants::kTokenStrings.find(type);
+            m_literal = it->second;
         }
     }
 
@@ -30,6 +24,9 @@ public:
     int GetLine();
     int GetOffset();
     std::string GetLiteral();
+    TokenType GetType();
+
+    void Print();
 
 private:
     TokenType m_type;

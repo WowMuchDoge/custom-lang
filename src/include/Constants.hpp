@@ -54,15 +54,16 @@ enum class TokenType {
     // Misc
     COMMA,
     SEMICOLON,
+    UNKNOWN,
     END
 };
 
 namespace ScannerConstants {
 
-    const int kTokenCount = 40;
+    constexpr int kTokenCount = (int)TokenType::END + 1;
 
     // Not including NUMBER, STRING, and END tokens since string content is different than token name
-    const std::map<TokenType, std::string> kTokenNames = {
+    const std::map<TokenType, std::string> kTokenStrings = {
         {TokenType::PLUS, "+"},
         {TokenType::MINUS, "-"},
         {TokenType::STAR, "*"},
@@ -104,5 +105,53 @@ namespace ScannerConstants {
 
         {TokenType::COMMA, ","},
         {TokenType::SEMICOLON, ";"}
+    };
+
+    const std::map<TokenType, std::string> kTokenNames = {
+        {TokenType::PLUS, "PLUS"},
+        {TokenType::MINUS, "MINUS"},
+        {TokenType::STAR, "STAR"},
+        {TokenType::SLASH, "SLASH"},
+        {TokenType::MOD, "MOD"},
+        {TokenType::EQUAL, "EQUAL"},
+        {TokenType::EQUAL_EQUAL, "EQUAL_EQUAL"},
+        {TokenType::BANG, "BANG"},
+        {TokenType::GREATER, "GREATER"},
+        {TokenType::GREATER_EQUAL, "GREATER_EQUAL"},
+        {TokenType::LESS, "LESS"},
+        {TokenType::LESS_EQUAL, "LESS_EQUAL"},
+        {TokenType::AND, "AND"},
+        {TokenType::OR, "OR"},
+        
+        {TokenType::IF, "IF"},
+        {TokenType::ELSE, "ELSE"},
+        {TokenType::FOR, "FOR"},
+        {TokenType::WHILE, "WHILE"},
+        {TokenType::DO, "DO"},
+        {TokenType::BREAK, "BREAK"},
+        {TokenType::CONTINUE, "CONTINUE"},
+        {TokenType::RETURN, "RETURN"},
+
+        {TokenType::VAR, "VAR"},
+        {TokenType::PUBLIC, "PUBLIC"},
+        {TokenType::PRIVATE, "PRIVATE"},
+        {TokenType::PROTECTED, "PROTECTED"},
+        {TokenType::FN, "FN"},
+        
+        {TokenType::PRINT, "PRINT"},
+        {TokenType::INPUT, "INPUT"},
+        {TokenType::EXIT, "EXIT"},
+        {TokenType::CLOCK, "CLOCK"},
+
+        {TokenType::NUMBER, "NUMBER"},
+        {TokenType::STRING, "STRING"},
+        {TokenType::TRUE, "TRUE"},
+        {TokenType::FALSE, "FALSE"},
+        {TokenType::NIL, "NIL"},
+
+        {TokenType::COMMA, "COMMA"},
+        {TokenType::SEMICOLON, "SEMICOLON"},
+        {TokenType::UNKNOWN, "UNKNOWN"},
+        {TokenType::END, "END"}
     };
 }

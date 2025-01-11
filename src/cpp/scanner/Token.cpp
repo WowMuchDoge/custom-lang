@@ -18,6 +18,7 @@ double Token::TokenToNumber() {
 
     return m_value;
 }
+
 int Token::GetLine() {
     return m_line;
 }
@@ -28,4 +29,12 @@ int Token::GetOffset() {
 
 std::string Token::GetLiteral() {
     return m_literal;
+}
+
+TokenType Token::GetType() {
+    return m_type;
+}
+
+void Token::Print() {
+    std::cout << "[TOKEN " << ScannerConstants::kTokenNames.at(m_type) << "]" << std::endl;
 }

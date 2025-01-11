@@ -2,13 +2,19 @@
 
 #include "scanner/Token.hpp"
 #include "error/ScannerError.hpp"
+#include "scanner/Scanner.hpp"
 
 int main() {
-    Token t(TokenType::AND, 1, 0);
+    Scanner scanner("+ _ * //% <= *");
 
-    try {
-        double hehe = t.TokenToNumber();
-    } catch (ScannerError e) {
-        e.Print();
+    Token t(TokenType::UNKNOWN, 1, 1);
+
+    while (t.GetType() != TokenType::END) {
+        try {
+            t = scanner.ScanToken();
+        } catch (ScannerError e) {
+            e.Print();
+            break;
+        }
     }
 }
