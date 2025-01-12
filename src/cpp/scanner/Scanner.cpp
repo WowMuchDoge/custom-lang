@@ -53,13 +53,24 @@ Token Scanner::ScanToken() {
                 return Token(TokenType::COMMA, ",");
             case '"':
                 return scanString();
+            case '{':
+                return Token(TokenType::LEFT_BRACE, "{");
+            case '}':
+                return Token(TokenType::RIGHT_BRACE, "}");
+            case '(':
+                return Token(TokenType::LEFT_PAREN, "(");
+            case ')':
+                return Token(TokenType::RIGHT_PAREN, ")");
+            case '\n':
+                m_line++;
+                break;
             default: {
                     if (isDigit(cur)) {
                         return scanNumber();
                     } else if (isAlpha(cur)) {
                         return scanIdentifier();
                     }
-                throw ScannerError(m_line, "Unexpected token '" + std::string(1, cur) + "'.");
+                throw new ScannerError(m_line, "Unexpected token '" + std::string(1, cur) + "'.");
             }
         }
     }
@@ -106,7 +117,7 @@ Token Scanner::scanString() {
 
     while (!atEnd() && peek() != '"') {
         if (atEnd() || peek() == '\n') {
-            throw ScannerError(m_line, "Unterminated string");
+            throw new ScannerError(m_line, "Unterminated string");
         }
         str += advance();
     }
@@ -122,7 +133,7 @@ char Scanner::peek() {
 
 void Scanner::consume(char expected, std::string message) {
     if (peek() != expected) {
-        throw ScannerError(m_line, message);
+        throw new ScannerError(m_line, message);
     }
 
     advance();
@@ -141,7 +152,7 @@ bool Scanner::atEnd() {
 }
 
 void Scanner::skipWhitespace() {
-    while (peek() == ' ' || peek() == '\n') advance();
+    while (peek() == ' ') advance();
 }
 
 bool Scanner::isDigit(char c) {

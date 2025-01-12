@@ -2,9 +2,10 @@
 
 #include <string>
 
+#include "error/Error.hpp"
 #include "scanner/Token.hpp"
 
-class ScannerError {
+class ScannerError : public Error {
 public:
     ScannerError(int line, std::string message) : m_line{line}, m_message{message} {}
 
