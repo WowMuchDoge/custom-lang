@@ -40,6 +40,4 @@ private:
     static bool isDigit(char c);
     static bool isAlpha(char c);
     static bool isAlphaNumeric(char c);
-
-    void skipWhitespace();
 };

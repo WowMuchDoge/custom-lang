@@ -3,11 +3,10 @@
 #include "error/ScannerError.hpp"
 
 Token Scanner::ScanToken() {
-    skipWhitespace();
-
     char cur;
 
-    while (!atEnd() && (cur = advance()) != ' ') {
+    while (!atEnd()) {
+        cur = advance();
         switch (cur) {
             case '+':
                 return Token(TokenType::PLUS, "+");
@@ -65,6 +64,9 @@ Token Scanner::ScanToken() {
                 m_line++;
                 m_offset = 0;
                 break;
+            case ' ':
+            case '\t':
+            case '\v':
             case '\r':
                 continue;
             case '\0':
@@ -157,10 +159,6 @@ char Scanner::advance() {
 
 bool Scanner::atEnd() {
     return peek() == '\0';
-}
-
-void Scanner::skipWhitespace() {
-    while (peek() == ' ') advance();
 }
 
 bool Scanner::isDigit(char c) {
