@@ -44,8 +44,6 @@ int main(int argc, char **argv) {
 
     std::string fileContent = readFile(argv[1]);
 
-    std::cout << fileContent << std::endl;
-
     if (fileContent == "") return -1;
 
     Scanner scanner(fileContent);
@@ -55,7 +53,6 @@ int main(int argc, char **argv) {
     while (true) {
         try {
             t = scanner.ScanToken();
-            t.Print();
         } catch (Error* e) {
             e->Print();
         }
