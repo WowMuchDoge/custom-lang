@@ -64,6 +64,8 @@ Token Scanner::ScanToken() {
             case '\n':
                 m_line++;
                 break;
+            case '\r':
+                continue;
             default: {
                     if (isDigit(cur)) {
                         return scanNumber();
