@@ -63,16 +63,20 @@ Token Scanner::ScanToken() {
                 return Token(TokenType::RIGHT_PAREN, ")");
             case '\n':
                 m_line++;
+                m_offset = 0;
                 break;
             case '\r':
                 continue;
+            case '\0':
+                return Token(TokenType::END);
             default: {
                     if (isDigit(cur)) {
                         return scanNumber();
                     } else if (isAlpha(cur)) {
                         return scanIdentifier();
                     }
-                throw new ScannerError(m_line, "Unexpected token '" + std::string(1, cur) + "'.");
+                m_error = ScannerError(m_line, "Unexpected token '" + std::string(1, cur) + "'.");
+                throw &m_error;
             }
         }
     }
@@ -119,7 +123,8 @@ Token Scanner::scanString() {
 
     while (!atEnd() && peek() != '"') {
         if (atEnd() || peek() == '\n') {
-            throw new ScannerError(m_line, "Unterminated string");
+            m_error = ScannerError(m_line, "Unterminated string");
+            throw &m_error;
         }
         str += advance();
     }
@@ -135,7 +140,8 @@ char Scanner::peek() {
 
 void Scanner::consume(char expected, std::string message) {
     if (peek() != expected) {
-        throw new ScannerError(m_line, message);
+        m_error = ScannerError(m_line, message);
+        throw &m_error;
     }
 
     advance();
