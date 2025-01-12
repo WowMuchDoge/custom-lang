@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
     while (true) {
         try {
             t = scanner.ScanToken();
+            t.Print();
         } catch (Error* e) {
             e->Print();
         }
