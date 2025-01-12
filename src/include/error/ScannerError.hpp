@@ -6,11 +6,11 @@
 
 class ScannerError {
 public:
-    ScannerError(Token token, std::string message) : m_token{token}, m_message{message} {}
+    ScannerError(int line, std::string message) : m_line{line}, m_message{message} {}
 
     void Print();
 
 private:
     std::string m_message;
-    Token m_token;
+    int m_line;
 };

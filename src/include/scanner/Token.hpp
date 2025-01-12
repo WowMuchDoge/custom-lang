@@ -11,19 +11,12 @@
 
 class Token {
 public:
-    Token(TokenType type, int line, int lineOffset, std::string literal = "", double number = NAN) 
-    : m_type{type}, m_line{line}, m_lineOffset{line}, m_literal{literal}, m_value{number} {
-        // End is the only non-literal token that does not contain specific text
-        if (literal == "" && type != TokenType::END) {
-            auto it = ScannerConstants::kTokenStrings.find(type);
-            m_literal = it->second;
-        }
-    }
+    Token(TokenType type, std::string literal = "", double number = NAN) 
+    : m_type{type}, m_literal{literal}, m_value{number} {}
 
-    int GetLine();
-    int GetOffset();
-    std::string GetLiteral();
-    TokenType GetType();
+    TokenType GetType() const;
+    double GetValue() const;
+    std::string GetLiteral() const;
 
     void Print();
 
@@ -31,7 +24,4 @@ private:
     TokenType m_type;
     double m_value;
     std::string m_literal;
-
-    int m_line;
-    int m_lineOffset;
 };

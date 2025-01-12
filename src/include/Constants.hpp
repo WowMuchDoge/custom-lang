@@ -55,6 +55,7 @@ enum class TokenType {
     COMMA,
     SEMICOLON,
     DOUBLE_QUOTE,
+    IDENTIFIER,
     UNKNOWN,
     END
 };
@@ -63,49 +64,33 @@ namespace ScannerConstants {
 
     constexpr int kTokenCount = (int)TokenType::END + 1;
 
-    // Not including NUMBER, STRING, and END tokens since string content is different than token name
-    const std::map<TokenType, std::string> kTokenStrings = {
-        {TokenType::PLUS, "+"},
-        {TokenType::MINUS, "-"},
-        {TokenType::STAR, "*"},
-        {TokenType::SLASH, "/"},
-        {TokenType::MOD, "%"},
-        {TokenType::EQUAL, "="},
-        {TokenType::EQUAL_EQUAL, "=="},
-        {TokenType::BANG, "!"},
-        {TokenType::GREATER, ">"},
-        {TokenType::GREATER_EQUAL, ">="},
-        {TokenType::LESS, "<"},
-        {TokenType::LESS_EQUAL, "<="},
-        {TokenType::AND, "and"},
-        {TokenType::OR, "or"},
+    const std::map<std::string, TokenType> kKeywords = {
+        {"and", TokenType::AND},
+        {"or", TokenType::OR},
         
-        {TokenType::IF, "if"},
-        {TokenType::ELSE, "else"},
-        {TokenType::FOR, "for"},
-        {TokenType::WHILE, "while"},
-        {TokenType::DO, "do"},
-        {TokenType::BREAK, "break"},
-        {TokenType::CONTINUE, "continue"},
-        {TokenType::RETURN, "return"},
+        {"if", TokenType::IF},
+        {"else", TokenType::ELSE},
+        {"for", TokenType::FOR},
+        {"while", TokenType::WHILE},
+        {"do", TokenType::DO},
+        {"break", TokenType::BREAK,},
+        {"continue", TokenType::CONTINUE},
+        {"return", TokenType::RETURN},
 
-        {TokenType::VAR, "var"},
-        {TokenType::PUBLIC, "public"},
-        {TokenType::PRIVATE, "private"},
-        {TokenType::PROTECTED, "protected"},
-        {TokenType::FN, "fn"},
+        {"var", TokenType::VAR},
+        {"public", TokenType::PUBLIC},
+        {"private", TokenType::PRIVATE},
+        {"protected", TokenType::PROTECTED},
+        {"fn", TokenType::FN},
         
-        {TokenType::PRINT, "print"},
-        {TokenType::INPUT, "input"},
-        {TokenType::EXIT, "exit"},
-        {TokenType::CLOCK, "clock"},
+        {"print", TokenType::PRINT},
+        {"input", TokenType::INPUT},
+        {"exit", TokenType::EXIT},
+        {"clock", TokenType::CLOCK},
 
-        {TokenType::TRUE, "true"},
-        {TokenType::FALSE, "false"},
-        {TokenType::NIL, "nil"},
-
-        {TokenType::COMMA, ","},
-        {TokenType::SEMICOLON, ";"}
+        {"true", TokenType::TRUE},
+        {"false", TokenType::FALSE},
+        {"nil", TokenType::NIL},
     };
 
     const std::map<TokenType, std::string> kTokenNames = {

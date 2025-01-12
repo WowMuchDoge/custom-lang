@@ -20,15 +20,17 @@ private:
 
     char peek();
     char advance();
+    void consume(char expected, std::string message);
 
     bool atEnd();
 
     Token scanNumber();
-    // Token scanIdentifier();
+    Token scanIdentifier();
+    Token scanString();
 
     static bool isDigit(char c);
+    static bool isAlpha(char c);
+    static bool isAlphaNumeric(char c);
 
     void skipWhitespace();
-
-    Token makeToken(TokenType type);
 };

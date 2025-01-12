@@ -6,20 +6,16 @@
 #include "Constants.hpp"
 #include "error/ScannerError.hpp"
 
-int Token::GetLine() {
-    return m_line;
-}
-
-int Token::GetOffset() {
-    return m_lineOffset;
-}
-
-std::string Token::GetLiteral() {
+std::string Token::GetLiteral() const {
     return m_literal;
 }
 
-TokenType Token::GetType() {
+TokenType Token::GetType() const {
     return m_type;
+}
+
+double Token::GetValue() const {
+    return m_value;
 }
 
 void Token::Print() {
@@ -28,6 +24,10 @@ void Token::Print() {
         return;
     } else if (m_type == TokenType::STRING) {
         std::cout << "[TOKEN STRING" << ", " << m_literal << "]" << std::endl;
+        return;
+    } else if (m_type == TokenType::IDENTIFIER) {
+        std::cout << "[TOKEN IDENTIFIER" << ", " << m_literal << "]" << std::endl;
+        return;
     }
     std::cout << "[TOKEN " << ScannerConstants::kTokenNames.at(m_type) << "]" << std::endl;
 }

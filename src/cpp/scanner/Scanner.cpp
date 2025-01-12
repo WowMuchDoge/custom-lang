@@ -10,58 +10,61 @@ Token Scanner::ScanToken() {
     while (!atEnd() && (cur = advance()) != ' ') {
         switch (cur) {
             case '+':
-                return makeToken(TokenType::PLUS);
+                return Token(TokenType::PLUS, "+");
             case '-':
-                return makeToken(TokenType::MINUS);
+                return Token(TokenType::MINUS, "-");
             case '*':
-                return makeToken(TokenType::STAR);
+                return Token(TokenType::STAR, "*");
             case '/':
                 if (peek() == '/') {
                     while (!atEnd() && peek() != '\n') advance();
                     break;
                 }
-                return makeToken(TokenType::SLASH);
+                return Token(TokenType::SLASH, "/");
             case '%':
-                return makeToken(TokenType::MOD);
+                return Token(TokenType::MOD, "%");
             case '=':
                 if (peek() == '=') {
                     advance();
-                    return makeToken(TokenType::EQUAL_EQUAL);
+                    return Token(TokenType::EQUAL_EQUAL, "==");
                 }
-                return makeToken(TokenType::EQUAL);
+                    return Token(TokenType::EQUAL, "=");
             case '!':
                 if (peek() == '=') {
                     advance();
-                    return makeToken(TokenType::BANG_EQUAL);
+                    return Token(TokenType::BANG_EQUAL, "!=");
                 }
-                return makeToken(TokenType::BANG);
+                return Token(TokenType::BANG, "!");
             case '>':
                 if (peek() == '=') {
                     advance();
-                    return makeToken(TokenType::GREATER_EQUAL);
+                    return Token(TokenType::GREATER_EQUAL, ">=");
                 }
-                return makeToken(TokenType::GREATER);
+                return Token(TokenType::GREATER, ">");
             case '<':
                 if (peek() == '=') {
                     advance();
-                    return makeToken(TokenType::LESS_EQUAL);
+                    return Token(TokenType::LESS_EQUAL, "<=");
                 }
-                return makeToken(TokenType::LESS);
-            case '\0':
-                return makeToken(TokenType::END);
+                return Token(TokenType::LESS, "<");
+            case ';':
+                return Token(TokenType::SEMICOLON, ";");
+            case ',':
+                return Token(TokenType::COMMA, ",");
+            case '"':
+                return scanString();
             default: {
-                    if (std::isdigit(cur)) {
+                    if (isDigit(cur)) {
                         return scanNumber();
-                    } 
-                    // else if (std::isalpha(cur)) {
-                    //     scanIdentifier();
-                    // }
-                throw ScannerError(makeToken(TokenType::UNKNOWN), "Unexpected token \"" + std::string(1, cur) + "\".");
+                    } else if (isAlpha(cur)) {
+                        return scanIdentifier();
+                    }
+                throw ScannerError(m_line, "Unexpected token '" + std::string(1, cur) + "'.");
             }
         }
     }
 
-    return makeToken(TokenType::END);
+    return Token(TokenType::END);
 }
 
 Token Scanner::scanNumber() {
@@ -79,17 +82,55 @@ Token Scanner::scanNumber() {
 
     int endIndex = m_currentIndex;
 
-    return Token(TokenType::NUMBER, m_line, m_offset, "", std::stod(m_source.substr(startIndex, endIndex - startIndex)));
+    return Token(TokenType::NUMBER, "", std::stod(m_source.substr(startIndex, endIndex - startIndex)));
+}
+
+Token Scanner::scanIdentifier() {
+    int start = m_currentIndex - 1;
+
+    while (isAlphaNumeric(peek())) advance();
+
+    std::string identifier = m_source.substr(start, m_currentIndex - start);
+
+    auto it = ScannerConstants::kKeywords.find(identifier);
+
+    if (it != ScannerConstants::kKeywords.end()) {
+        return Token(it->second, identifier);
+    }
+
+    return Token(TokenType::IDENTIFIER, identifier);
+}
+
+Token Scanner::scanString() {
+    std::string str = "";
+
+    while (!atEnd() && peek() != '"') {
+        if (atEnd() || peek() == '\n') {
+            throw ScannerError(m_line, "Unterminated string");
+        }
+        str += advance();
+    }
+
+    consume('"', "Expected '\"' token.");
+
+    return Token(TokenType::STRING, str);
 }
 
 char Scanner::peek() {
     return m_source[m_currentIndex];
 }
 
+void Scanner::consume(char expected, std::string message) {
+    if (peek() != expected) {
+        throw ScannerError(m_line, message);
+    }
+
+    advance();
+}
+
 char Scanner::advance() {
     if (!atEnd()) {
-        m_currentIndex++;
-        return m_source[m_currentIndex - 1];
+        return m_source[m_currentIndex++];
     }
 
     return '\0';
@@ -103,10 +144,16 @@ void Scanner::skipWhitespace() {
     while (peek() == ' ' || peek() == '\n') advance();
 }
 
-Token Scanner::makeToken(TokenType type) {
-    return Token(type, m_line, m_offset);
-}
-
 bool Scanner::isDigit(char c) {
     return c >= '0' && c <= '9';
+}
+
+bool Scanner::isAlpha(char c) {
+    return (c >= 'A' && c <= 'Z') ||
+           (c >= 'a' && c <= 'z') ||
+           c == '_';
+}
+
+bool Scanner::isAlphaNumeric(char c) {
+    return isAlpha(c) || isDigit(c);
 }

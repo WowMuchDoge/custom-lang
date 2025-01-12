@@ -5,9 +5,9 @@
 #include "scanner/Scanner.hpp"
 
 int main() {
-    Scanner scanner("1234.34567 + 345 == 2342");
+    Scanner scanner("var _a =123;");
 
-    Token t(TokenType::UNKNOWN, 1, 1);
+    Token t(TokenType::UNKNOWN);
 
     while (t.GetType() != TokenType::END) {
         try {
