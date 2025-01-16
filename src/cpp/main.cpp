@@ -7,6 +7,7 @@
 #include "scanner/Token.hpp"
 #include "error/ScannerError.hpp"
 #include "scanner/Scanner.hpp"
+#include "compiler/expression/String.hpp"
 
 std::string getExtension(std::string fileName) {
     int pos = fileName.find(".");
@@ -37,27 +38,34 @@ std::string readFile(std::string filename) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-        std::cout << "Usage: custom-lang <filename>" << std::endl;
-        return -1;
-    }
+    // if (argc != 2) {
+    //     std::cout << "Usage: custom-lang <filename>" << std::endl;
+    //     return -1;
+    // }
 
-    std::string fileContent = readFile(argv[1]);
+    // std::string fileContent = readFile(argv[1]);
 
-    if (fileContent == "") return -1;
+    // if (fileContent == "") return -1;
 
-    Scanner scanner(fileContent);
+    // Scanner scanner(fileContent);
 
-    Token t(TokenType::UNKNOWN);
+    // Token t(TokenType::UNKNOWN);
 
-    while (true) {
-        try {
-            t = scanner.ScanToken();
-            t.Print();
-        } catch (Error* e) {
-            e->Print();
-        }
+    // while (true) {
+    //     try {
+    //         t = scanner.ScanToken();
+    //         t.Print();
+    //     } catch (Error* e) {
+    //         e->Print();
+    //     }
 
-        if (t.GetType() == TokenType::END) break;
-    }
+    //     if (t.GetType() == TokenType::END) break;
+    // }
+
+    String str("Hello There ");
+    String str2("Hehe ");
+
+    String str3 = str3;
+
+    std::cout << str3.GetString() << std::endl;
 }
