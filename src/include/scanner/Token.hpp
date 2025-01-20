@@ -11,7 +11,7 @@
 
 class Token {
 public:
-    Token(TokenType type, std::string literal = "", double number = NAN) 
+    Token(TokenType type = TokenType::UNKNOWN, std::string literal = "", double number = NAN) 
     : m_type{type}, m_literal{literal}, m_value{number} {}
 
     TokenType GetType() const;

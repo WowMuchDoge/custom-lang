@@ -8,6 +8,7 @@
 #include "error/ScannerError.hpp"
 #include "scanner/Scanner.hpp"
 #include "compiler/expression/Value.hpp"
+#include "compiler/expression/Expr.hpp"
 
 std::string getExtension(std::string fileName) {
     int pos = fileName.find(".");
@@ -62,7 +63,19 @@ int main(int argc, char **argv) {
 	// 	if (t.GetType() == TokenType::END) break;
  //    
 	// }
+	
+	Value v1;
+	v1.SetNumber(1.2);
 
+	Value v2;
+	v2.SetNumber(4.1);
+
+	Primary p1(v1);
+	Primary p2(v2);
+
+	Binary add(TokenType::PLUS, &p1, &p2);
+
+	std::cout << add.ToString() << std::endl;
 
 	return 0;
 }

@@ -28,3 +28,15 @@ void Value::SetNil() {
 ValueType Value::GetType() {
 	return m_type;
 }
+
+double Value::GetNumber() {
+	return std::get<double>(m_value);
+}
+
+bool Value::GetBoolean() {
+	return std::get<bool>(m_value);
+}
+
+std::string Value::GetString() {
+	return std::get<std::string>(m_value);
+}
