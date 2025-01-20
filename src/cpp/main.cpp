@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 		return -1;
     }
 
-	Parser parser("34 + 2 * 12");
+	Parser parser("nil == false == \"test\"");
 
 	std::shared_ptr<Expr> expr = parser.GetAst();
 

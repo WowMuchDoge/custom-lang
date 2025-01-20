@@ -19,8 +19,11 @@ private:
 	Token consume(TokenType type, std::string msg);
 
 	TokenType match(int count, ...);
+	bool match(TokenType type);
 
-	std::shared_ptr<Expr> expression();
+	std::shared_ptr<Expr> expression();	
+	std::shared_ptr<Expr> logical();	
+	std::shared_ptr<Expr> comparison();
 	std::shared_ptr<Expr> term();
 	std::shared_ptr<Expr> factor();
 	std::shared_ptr<Expr> primary();

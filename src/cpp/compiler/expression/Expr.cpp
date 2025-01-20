@@ -46,12 +46,12 @@ std::string Primary::ToString() {
 		case ValueType::NUMBER:
 			return std::to_string(m_value.GetNumber());
 		case ValueType::STRING:
-			return m_value.GetString();
+			return "\"" + m_value.GetString() + "\"";
 		case ValueType::BOOL:
 			if (m_value.GetBoolean())
-				return "true";
+				return "TRUE";
 			else
-				return "false";
+				return "FALSE";
 		case ValueType::NIL:
 			return "NIL";
 		default:
