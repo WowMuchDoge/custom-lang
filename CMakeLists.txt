@@ -9,12 +9,15 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Custom Variables
+
+# Directories
 set(CPP_DIR src/cpp/)
 set(SCANNER_DIR src/cpp/scanner/)
 set(COMPILER_DIR src/cpp/compiler/)
 set(ERROR_DIR src/cpp/error)
 set(INCLUDE_DIR src/include)
 
+# Setting source files
 set(CPP_SOURCES ${CPP_DIR}/main.cpp
 				${SCANNER_DIR}/Token.cpp
 				${SCANNER_DIR}/Scanner.cpp
@@ -22,6 +25,7 @@ set(CPP_SOURCES ${CPP_DIR}/main.cpp
 				${COMPILER_DIR}/expression/Expr.cpp
 				${COMPILER_DIR}/Parser.cpp
 				${ERROR_DIR}/ScannerError.cpp
+				${ERROR_DIR}/CompilerError.cpp
 )
 
 set(EXECUTABLE_NAME out)
