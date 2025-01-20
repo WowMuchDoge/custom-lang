@@ -5,7 +5,7 @@
 
 class Parser {
 public:
-	Parser(std::string source) : m_scanner{source}, m_prev{m_scanner.ScanToken()}, m_next{m_scanner.ScanToken()} {}
+	Parser(std::string source) : m_scanner{source}, m_next{m_scanner.ScanToken()} {}
 
 	Expr* GetAst();
 private:

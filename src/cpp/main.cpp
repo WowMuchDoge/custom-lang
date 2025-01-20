@@ -40,11 +40,11 @@ int main(int argc, char **argv) {
 		return -1;
     }
 
-	Parser parser(readFile(argv[1]));
+	Parser parser("1 * 2");
 
 	Expr* expr = parser.GetAst();
 
-	expr->ToString();
+	std::cout << expr->ToString() << std::endl;
 
 	return 0;
 }

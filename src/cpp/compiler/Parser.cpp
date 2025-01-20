@@ -10,7 +10,8 @@ Token Parser::peek() {
 
 Token Parser::advance() {
 	m_prev = m_next;
-	return (m_next = m_scanner.ScanToken());
+	m_next = m_scanner.ScanToken();
+	return m_prev;
 }
 
 bool Parser::atEnd() {
@@ -56,7 +57,7 @@ Expr* Parser::term() {
 		
 		Expr* right = factor();
 
-		left = new Binary(op, right, left);
+		left = new Binary(op, left, right);
 	}
 
 	return left;
