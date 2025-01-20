@@ -40,50 +40,50 @@ TokenType Parser::match(int count, ...) {
 	return TokenType::UNKNOWN;
 }
 
-Expr* Parser::GetAst() {
+std::shared_ptr<Expr> Parser::GetAst() {
 	return expression();
 }
 
-Expr* Parser::expression() {
+std::shared_ptr<Expr> Parser::expression() {
 	return term();
 }
 
-Expr* Parser::term() {
-	Expr* left = factor();
+std::shared_ptr<Expr> Parser::term() {
+	std::shared_ptr<Expr> left = factor();
 	TokenType op;
 
 	while ((op = match(2, TokenType::PLUS, TokenType::MINUS))
 			!= TokenType::UNKNOWN) {
 		
-		Expr* right = factor();
+		std::shared_ptr<Expr> right = factor();
 
-		left = new Binary(op, left, right);
+		left = std::shared_ptr<Expr>(new Binary(op, left, right));
 	}
 
 	return left;
 }
 
-Expr* Parser::factor() {
-	Expr* left = primary();
+std::shared_ptr<Expr> Parser::factor() {
+	std::shared_ptr<Expr> left = primary();
 	TokenType op;
 
 	while ((op = match(2, TokenType::STAR, TokenType::SLASH))
 			!= TokenType::UNKNOWN) {
 		
-		Expr* right = primary();
+		std::shared_ptr<Expr> right = primary();
 
-		left = new Binary(op, right, left);
+		left = std::shared_ptr<Expr>(new Binary(op, right, left));
 	}
 
 	return left;
 }
 
-Expr* Parser::primary() {
+std::shared_ptr<Expr> Parser::primary() {
 	if (peek().GetType() == TokenType::LEFT_PAREN) {
 		// This is unreachable
 		consume(TokenType::LEFT_PAREN, "Expected '(' before group.");
 
-		Expr* expr = expression();
+		std::shared_ptr<Expr> expr = expression();
 
 		consume(TokenType::RIGHT_PAREN, "Expected ')' after group.");
 
@@ -95,7 +95,7 @@ Expr* Parser::primary() {
 	
 		// Implicit constructor, constructor to Value is being called
 		// with a double
-		return new Primary(number.GetValue());
+		return std::shared_ptr<Expr>(new Primary(number.GetValue()));
 	}
 
 	throw CompilerError("Unknown primary.", m_scanner.GetLine());

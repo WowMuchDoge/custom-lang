@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "compiler/expression/Value.hpp"
 #include "Constants.hpp"
 
@@ -20,7 +22,7 @@ public:
 
 class Binary : public Expr {
 public:
-	Binary(TokenType op, Expr* left, Expr* right)
+	Binary(TokenType op, std::shared_ptr<Expr> left, std::shared_ptr<Expr> right)
 		: m_op{op}, m_left{left}, m_right{right} {}
 	
 	ExprType GetExprType();
@@ -28,31 +30,31 @@ public:
 
 private:
 	TokenType m_op;
-	Expr* m_right;
-	Expr* m_left;
+	std::shared_ptr<Expr> m_right;
+	std::shared_ptr<Expr> m_left;
 };
 
 class Unary : public Expr {
 public:
-	Unary(TokenType op, Expr* right) : m_op{op}, m_right{right} {}
+	Unary(TokenType op, std::shared_ptr<Expr> right) : m_op{op}, m_right{right} {}
 
 	ExprType GetExprType();
 	std::string ToString();
 
 private:
 	TokenType m_op;
-	Expr* m_right;
+	std::shared_ptr<Expr> m_right;
 };
 
 class Grouping : public Expr {
 public:
-	Grouping(Expr *expr) : m_expr{expr} {}
+	Grouping(std::shared_ptr<Expr> expr) : m_expr{expr} {}
 
 	ExprType GetExprType();
 	std::string ToString();
 
 private:
-	Expr* m_expr;
+	std::shared_ptr<Expr> m_expr;
 };
 
 class Primary : public Expr {

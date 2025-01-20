@@ -1,5 +1,8 @@
 #pragma once
 
+#include <memory.h>
+#include <memory>
+
 #include "scanner/Scanner.hpp"
 #include "compiler/expression/Expr.hpp"
 
@@ -7,7 +10,7 @@ class Parser {
 public:
 	Parser(std::string source) : m_scanner{source}, m_next{m_scanner.ScanToken()} {}
 
-	Expr* GetAst();
+	std::shared_ptr<Expr> GetAst();
 private:
 	Token peek();
 	Token advance();
@@ -16,12 +19,11 @@ private:
 	Token consume(TokenType type, std::string msg);
 
 	TokenType match(int count, ...);
-	TokenType match(TokenType type);
 
-	Expr* expression();
-	Expr* term();
-	Expr* factor();
-	Expr* primary();
+	std::shared_ptr<Expr> expression();
+	std::shared_ptr<Expr> term();
+	std::shared_ptr<Expr> factor();
+	std::shared_ptr<Expr> primary();
 
 	Scanner m_scanner;
 	Token m_next;

@@ -40,9 +40,9 @@ int main(int argc, char **argv) {
 		return -1;
     }
 
-	Parser parser("1 * 2");
+	Parser parser("34 + 2 * 12");
 
-	Expr* expr = parser.GetAst();
+	std::shared_ptr<Expr> expr = parser.GetAst();
 
 	std::cout << expr->ToString() << std::endl;
 
