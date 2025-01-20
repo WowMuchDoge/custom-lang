@@ -4,11 +4,7 @@
 #include <sstream>
 
 #include "Constants.hpp"
-#include "scanner/Token.hpp"
-#include "error/ScannerError.hpp"
-#include "scanner/Scanner.hpp"
-#include "compiler/expression/Value.hpp"
-#include "compiler/expression/Expr.hpp"
+#include "compiler/Parser.hpp"
 
 std::string getExtension(std::string fileName) {
     int pos = fileName.find(".");
@@ -39,43 +35,16 @@ std::string readFile(std::string filename) {
 }
 
 int main(int argc, char **argv) {
- //    if (argc != 2) {
-	// 	std::cout << "Usage: custom-lang <filename>" << std::endl;
-	// 	return -1;
- //    }
-	//
- //    std::string fileContent = readFile(argv[1]);
-	//
- //    if (fileContent == "") return -1;
-	//
- //    Scanner scanner(fileContent);
-	//
- //    Token t(TokenType::UNKNOWN);
-	//
- //    while (true) {
-	// 	try {
-	// 		t = scanner.ScanToken();
-	// 		t.Print();
-	// 	} catch (Error* e) {
-	// 		e->Print();
-	// 	}
-	//
-	// 	if (t.GetType() == TokenType::END) break;
- //    
-	// }
-	
-	Value v1;
-	v1.SetNumber(1.2);
+    if (argc != 2) {
+		std::cout << "Usage: custom-lang <filename>" << std::endl;
+		return -1;
+    }
 
-	Value v2;
-	v2.SetNumber(4.1);
+	Parser parser(readFile(argv[1]));
 
-	Primary p1(v1);
-	Primary p2(v2);
+	Expr* expr = parser.GetAst();
 
-	Binary add(TokenType::PLUS, &p1, &p2);
-
-	std::cout << add.ToString() << std::endl;
+	expr->ToString();
 
 	return 0;
 }

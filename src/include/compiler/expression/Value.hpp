@@ -15,8 +15,10 @@ enum class ValueType {
 class Value {
 public:
 
-	// Sets value to nil
     Value();
+	Value(double val);
+	Value(bool b);
+	Value(std::string str);
 
 	void SetNumber(double val);
 	void SetBoolean(bool b);

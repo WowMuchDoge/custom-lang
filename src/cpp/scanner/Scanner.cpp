@@ -88,6 +88,11 @@ Token Scanner::ScanToken() {
     return Token(TokenType::END);
 }
 
+
+int Scanner::GetLine() {
+	return m_line;
+}
+
 Token Scanner::scanNumber() {
     // m_currentIndex is always the next token to be consumed and 
     // number that is encountered has already been consumed, so

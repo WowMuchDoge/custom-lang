@@ -20,8 +20,8 @@ public:
 
 class Binary : public Expr {
 public:
-	Binary(TokenType op, Expr* right, Expr* left)
-		: m_op{op}, m_right{right}, m_left{left} {}
+	Binary(TokenType op, Expr* left, Expr* right)
+		: m_op{op}, m_left{left}, m_right{right} {}
 	
 	ExprType GetExprType();
 	std::string ToString();

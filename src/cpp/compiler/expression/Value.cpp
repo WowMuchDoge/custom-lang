@@ -4,6 +4,21 @@ Value::Value() {
 	m_type = ValueType::NIL;
 }
 
+Value::Value(double val) {
+	m_type = ValueType::NUMBER;
+	m_value = val;
+}
+
+Value::Value(bool b) {
+	m_type = ValueType::BOOL;
+	m_value = b;
+}
+
+Value::Value(std::string str) {
+	m_type = ValueType::STRING;
+	m_value = str;
+}
+
 void Value::SetNumber(double val) {
 	m_type = ValueType::NUMBER;
 	m_value = val;
