@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 
 	std::shared_ptr<Expr> expr = parser.GetAst();
 
-	std::cout << expr->ToString() << std::endl;
+	// std::cout << expr->ToString() << std::endl;
 
 	return 0;
 }

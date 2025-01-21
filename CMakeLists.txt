@@ -15,6 +15,7 @@ set(CPP_DIR src/cpp/)
 set(SCANNER_DIR src/cpp/scanner/)
 set(COMPILER_DIR src/cpp/compiler/)
 set(ERROR_DIR src/cpp/error)
+set(SCOPE_DIR src/cpp/compiler/scope)
 set(INCLUDE_DIR src/include)
 
 # Setting source files
@@ -24,6 +25,7 @@ set(CPP_SOURCES ${CPP_DIR}/main.cpp
 				${COMPILER_DIR}/expression/Value.cpp
 				${COMPILER_DIR}/expression/Expr.cpp
 				${COMPILER_DIR}/Parser.cpp
+				${COMPILER_DIR}/ScopeStack.cpp
 				${ERROR_DIR}/ScannerError.cpp
 				${ERROR_DIR}/CompilerError.cpp
 )
