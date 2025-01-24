@@ -57,6 +57,8 @@ std::shared_ptr<Stmt> Parser::variableDeclaration() {
 	consume(TokenType::VAR, "Expected keyword 'var' before variable declaration.");
 	Token var = consume(TokenType::IDENTIFIER, "Unexpected keyword in variable declaration.");
 
+	m_scope.Push(var.GetLiteral());
+
 	std::shared_ptr<Expr> expr(new Primary(Value()));
 
 	if (peek().GetType() == TokenType::EQUAL) {
@@ -67,7 +69,7 @@ std::shared_ptr<Stmt> Parser::variableDeclaration() {
 
 	consume(TokenType::SEMICOLON, "Expected ';' after variable declaration.");
 
-	return std::shared_ptr<Stmt>(new VariableDeclaration(0, expr));
+	return std::shared_ptr<Stmt>(new VariableDeclaration(expr));
 }
 
 std::shared_ptr<Expr> Parser::expression() {
@@ -137,6 +139,18 @@ std::shared_ptr<Expr> Parser::factor() {
 std::shared_ptr<Expr> Parser::primary() {
 	if (match(TokenType::TRUE)) return std::shared_ptr<Expr>(new Primary(true));
 	if (match(TokenType::FALSE)) return std::shared_ptr<Expr>(new Primary(false));
+
+	// Variable resolution
+	if (peek().GetType() == TokenType::IDENTIFIER) {
+		std::string name = advance().GetLiteral();
+		int id;
+
+		if ((id = m_scope.Resolve(name)) == -1) {
+			throw CompilerError("Unkown identifier " + name + ".", m_scanner.GetLine());
+		}
+
+		return std::shared_ptr<Expr>(new Identifier(id));
+	}
 
 	// Value constructor with no args constructs a nil value
 	if (match(TokenType::NIL)) return std::shared_ptr<Expr>(new Primary(Value()));

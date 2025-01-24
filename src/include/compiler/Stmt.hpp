@@ -10,7 +10,7 @@ public:
 
 class VariableDeclaration : public Stmt {
 public:
-	VariableDeclaration(int id, std::shared_ptr<Expr> expr) : m_id{id}, m_expr{expr} {}
+	VariableDeclaration(std::shared_ptr<Expr> expr) : m_expr{expr} {}
 
 	void Print();
 private:
@@ -18,7 +18,4 @@ private:
 	// expression will only be evaluated when the variable
 	// is declared (if there is any)
 	std::shared_ptr<Expr> m_expr;
-
-	// Used for resolving the variable value at run time
-	int m_id;
 };

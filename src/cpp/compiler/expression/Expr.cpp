@@ -58,3 +58,11 @@ std::string Primary::ToString() {
 			return "Unkown Type " + std::to_string((int)m_value.GetType()) + ".";
 	}
 }
+
+std::string Identifier::ToString() {
+	return "[Identifier, id = " + std::to_string(m_id) + "]";
+}
+
+ExprType Identifier::GetExprType() {
+	return ExprType::IDENTIFIER;
+}

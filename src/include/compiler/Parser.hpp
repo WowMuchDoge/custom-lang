@@ -4,12 +4,13 @@
 #include <memory>
 
 #include "scanner/Scanner.hpp"
+#include "compiler/ScopeStack.hpp"
 #include "compiler/expression/Expr.hpp"
 #include "compiler/Stmt.hpp"
 
 class Parser {
 public:
-	Parser(std::string source) : m_scanner{source}, m_next{m_scanner.ScanToken()} {}
+	Parser(std::string source) : m_scanner{source}, m_next{m_scanner.ScanToken()}, m_scope{} {}
 
 	std::shared_ptr<Stmt> GetAst();
 private:
@@ -36,4 +37,6 @@ private:
 	Scanner m_scanner;
 	Token m_next;
 	Token m_prev;
+	
+	ScopeStack m_scope;
 };

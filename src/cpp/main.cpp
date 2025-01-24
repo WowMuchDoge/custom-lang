@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 		return -1;
     }
 
-	Parser parser("var a = nil == false == \"test\";");
+	Parser parser("var a = nil == false == \"test\" == a;");
 
 	std::shared_ptr<Stmt> stmt = parser.GetAst();
 

@@ -1,7 +1,8 @@
 #include "compiler/ScopeStack.hpp"
 
 void ScopeStack::Push(std::string name) {
-	m_symbolSlots[m_depth].insert({name, m_currentSlot++});
+	// `m_depth` refers to the head of the stack which is out of the current index
+	m_symbolSlots[m_depth - 1].insert({name, m_currentSlot++});
 }
 
 void ScopeStack::NewScope() {
@@ -15,7 +16,7 @@ void ScopeStack::EndScope() {
 }
 
 int ScopeStack::Resolve(std::string name) {
-	auto it = m_symbolSlots[m_depth].find(name);
+	auto it = m_symbolSlots[m_depth - 1].find(name);
 
 	int searchIndex = m_depth;
 

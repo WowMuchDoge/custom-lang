@@ -9,7 +9,8 @@ enum class ExprType {
     BINARY,
     UNARY,
     GROUPING,
-    PRIMARY
+    PRIMARY,
+	IDENTIFIER
 };
 
 class Expr {
@@ -66,4 +67,17 @@ public:
 
 private:
 	Value m_value;
+};
+
+class Identifier : public Expr {
+public:
+	Identifier(int id) : m_id{id} {}
+
+	ExprType GetExprType();
+
+	std::string ToString();
+private:
+	// We only need an ID since the value associated with the 
+	// identifier will only be deduced at runtime 
+	int m_id;
 };
