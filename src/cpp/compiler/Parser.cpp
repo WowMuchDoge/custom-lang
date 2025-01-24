@@ -49,8 +49,25 @@ bool Parser::match(TokenType type) {
 	return false;
 }
 
-std::shared_ptr<Expr> Parser::GetAst() {
-	return expression();
+std::shared_ptr<Stmt> Parser::GetAst() {
+	return variableDeclaration();
+}
+
+std::shared_ptr<Stmt> Parser::variableDeclaration() {
+	consume(TokenType::VAR, "Expected keyword 'var' before variable declaration.");
+	Token var = consume(TokenType::IDENTIFIER, "Unexpected keyword in variable declaration.");
+
+	std::shared_ptr<Expr> expr(new Primary(Value()));
+
+	if (peek().GetType() == TokenType::EQUAL) {
+		advance();
+
+		expr = expression();
+	}
+
+	consume(TokenType::SEMICOLON, "Expected ';' after variable declaration.");
+
+	return std::shared_ptr<Stmt>(new VariableDeclaration(0, expr));
 }
 
 std::shared_ptr<Expr> Parser::expression() {
@@ -106,7 +123,7 @@ std::shared_ptr<Expr> Parser::factor() {
 	std::shared_ptr<Expr> left = primary();
 	TokenType op;
 
-	while ((op = match(2, TokenType::STAR, TokenType::SLASH))
+	while ((op = match(3, TokenType::STAR, TokenType::SLASH, TokenType::MOD))
 			!= TokenType::UNKNOWN) {
 		
 		std::shared_ptr<Expr> right = primary();

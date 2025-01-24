@@ -26,6 +26,7 @@ set(CPP_SOURCES ${CPP_DIR}/main.cpp
 				${COMPILER_DIR}/expression/Expr.cpp
 				${COMPILER_DIR}/Parser.cpp
 				${COMPILER_DIR}/ScopeStack.cpp
+				${COMPILER_DIR}/Stmt.cpp
 				${ERROR_DIR}/ScannerError.cpp
 				${ERROR_DIR}/CompilerError.cpp
 )

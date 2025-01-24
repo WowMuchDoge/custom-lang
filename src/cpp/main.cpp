@@ -40,11 +40,11 @@ int main(int argc, char **argv) {
 		return -1;
     }
 
-	Parser parser("nil == false == \"test\"");
+	Parser parser("var a = nil == false == \"test\";");
 
-	std::shared_ptr<Expr> expr = parser.GetAst();
+	std::shared_ptr<Stmt> stmt = parser.GetAst();
 
-	// std::cout << expr->ToString() << std::endl;
+	stmt->Print();
 
 	return 0;
 }

@@ -13,7 +13,6 @@ public:
 	void EndScope();
 
 	int Resolve(std::string name);
-	bool DoesExist(std::string name);
 private:
 	int m_depth;
 	int m_currentSlot;

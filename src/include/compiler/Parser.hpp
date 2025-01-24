@@ -5,12 +5,13 @@
 
 #include "scanner/Scanner.hpp"
 #include "compiler/expression/Expr.hpp"
+#include "compiler/Stmt.hpp"
 
 class Parser {
 public:
 	Parser(std::string source) : m_scanner{source}, m_next{m_scanner.ScanToken()} {}
 
-	std::shared_ptr<Expr> GetAst();
+	std::shared_ptr<Stmt> GetAst();
 private:
 	Token peek();
 	Token advance();
@@ -21,6 +22,10 @@ private:
 	TokenType match(int count, ...);
 	bool match(TokenType type);
 
+	// Statements
+	std::shared_ptr<Stmt> variableDeclaration(); 
+
+	// Expressions
 	std::shared_ptr<Expr> expression();	
 	std::shared_ptr<Expr> logical();	
 	std::shared_ptr<Expr> comparison();
