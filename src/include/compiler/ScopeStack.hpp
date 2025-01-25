@@ -5,7 +5,7 @@
 
 class ScopeStack {
 public:
-	ScopeStack() : m_depth{0}, m_currentSlot{0} {}
+	ScopeStack() : m_depth{0}, m_currentSlot{0}, m_symbolSlots{} {}
 
 	void Push(std::string name);
 

@@ -10,7 +10,10 @@
 
 class Parser {
 public:
-	Parser(std::string source) : m_scanner{source}, m_next{m_scanner.ScanToken()}, m_scope{} {}
+	Parser(std::string source) : m_scanner{source}, m_next{m_scanner.ScanToken()}, m_scope{} {
+		// Inserting global scope
+		m_scope.NewScope();
+	}
 
 	std::shared_ptr<Stmt> GetAst();
 private:

@@ -18,10 +18,10 @@ void ScopeStack::EndScope() {
 int ScopeStack::Resolve(std::string name) {
 	auto it = m_symbolSlots[m_depth - 1].find(name);
 
-	int searchIndex = m_depth;
+	int searchIndex = m_depth - 1;
 
 	while (it == m_symbolSlots[searchIndex].end()) {
-		if (searchIndex == 0)
+		if (searchIndex <= 0)
 			return -1;
 
 		it = m_symbolSlots[--searchIndex].find(name);
