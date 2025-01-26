@@ -67,8 +67,8 @@ void Parser::skipStatement() {
 	while (!atEnd() && advance().GetType() != TokenType::SEMICOLON);
 }
 
-std::vector<std::shared_ptr<Stmt>> Parser::GetAst() {
-	std::vector<std::shared_ptr<Stmt>> program;
+std::vector<StmtPtr> Parser::GetAst() {
+	std::vector<StmtPtr> program;
 	
 	while (!atEnd()) {
 		try {
@@ -82,7 +82,7 @@ std::vector<std::shared_ptr<Stmt>> Parser::GetAst() {
 	return program;
 }
 
-std::shared_ptr<Stmt> Parser::statement() {
+StmtPtr Parser::statement() {
 	if (match(TokenType::VAR)) {
 		return variableDeclaration();
 	} else if (match(TokenType::PRINT)) {
@@ -94,12 +94,12 @@ std::shared_ptr<Stmt> Parser::statement() {
 	throw makeCompilerError("Unexpected token '" + peek().GetLiteral() + "'.");
 }
 
-std::shared_ptr<Stmt> Parser::variableDeclaration() {
+StmtPtr Parser::variableDeclaration() {
 	Token var = consume(TokenType::IDENTIFIER, "Unexpected keyword '" + peek().GetLiteral() + "' in variable declaration.");
 
 	m_scope.Push(var.GetLiteral());
 
-	std::shared_ptr<Expr> expr(new Primary(Value()));
+	ExprPtr expr(new Primary(Value()));
 
 	if (peek().GetType() == TokenType::EQUAL) {
 		advance();
@@ -109,25 +109,25 @@ std::shared_ptr<Stmt> Parser::variableDeclaration() {
 
 	consumeSemicolon();
 
-	return std::shared_ptr<Stmt>(new VariableDeclaration(expr));
+	return StmtPtr(new VariableDeclaration(expr));
 }
 
-std::shared_ptr<Stmt> Parser::printStatement() {
+StmtPtr Parser::printStatement() {
 	consume(TokenType::LEFT_PAREN, "Expected '(' after print statement.");
 
-	std::shared_ptr<Expr> expr = expression();
+	ExprPtr expr = expression();
 
 	consume(TokenType::RIGHT_PAREN, "Expected ')' after expression.");
 
 	consumeSemicolon();
 
-	return std::shared_ptr<Stmt>(new PrintStatement(expr));
+	return StmtPtr(new PrintStatement(expr));
 }
 
-std::shared_ptr<Stmt> Parser::blockStatement() {
+StmtPtr Parser::blockStatement() {
 	int startLine = m_scanner.GetLine();
 	
-	std::vector<std::shared_ptr<Stmt>> statements;	
+	std::vector<StmtPtr> statements;	
 
 	while (peek().GetType() != TokenType::RIGHT_BRACE) {
 		if (atEnd()) {
@@ -144,76 +144,76 @@ std::shared_ptr<Stmt> Parser::blockStatement() {
 	
 	consume(TokenType::RIGHT_BRACE, "Expected '}' after block."); 
 
-	return std::shared_ptr<Stmt>(new BlockStatement(statements));
+	return StmtPtr(new BlockStatement(statements));
 }
 
-std::shared_ptr<Expr> Parser::expression() {
+ExprPtr Parser::expression() {
 	return logical();
 }
 
-std::shared_ptr<Expr> Parser::logical() {
-	std::shared_ptr<Expr> left = comparison();
+ExprPtr Parser::logical() {
+	ExprPtr left = comparison();
 	TokenType op;
 
 	while ((op = match(2, TokenType::AND, TokenType::OR))
 			!= TokenType::UNKNOWN) {
 		
-		std::shared_ptr<Expr> right = comparison();
+		ExprPtr right = comparison();
 
-		left = std::shared_ptr<Expr>(new Binary(op, left, right));
+		left = ExprPtr(new Binary(op, left, right));
 	}
 
 	return left;
 }
 
-std::shared_ptr<Expr> Parser::comparison() {
-	std::shared_ptr<Expr> left = term();
+ExprPtr Parser::comparison() {
+	ExprPtr left = term();
 	TokenType op;
 
 	while ((op = match(4, TokenType::EQUAL_EQUAL, TokenType::BANG_EQUAL, 
 			TokenType::GREATER_EQUAL, TokenType::LESS_EQUAL)) != TokenType::UNKNOWN) {
 		
-		std::shared_ptr<Expr> right = term();
+		ExprPtr right = term();
 
-		left = std::shared_ptr<Expr>(new Binary(op, left, right));
+		left = ExprPtr(new Binary(op, left, right));
 	}
 
 	return left;
 }
 
-std::shared_ptr<Expr> Parser::term() {
-	std::shared_ptr<Expr> left = factor();
+ExprPtr Parser::term() {
+	ExprPtr left = factor();
 	TokenType op;
 
 	while ((op = match(2, TokenType::PLUS, TokenType::MINUS))
 			!= TokenType::UNKNOWN) {
 		
-		std::shared_ptr<Expr> right = factor();
+		ExprPtr right = factor();
 
-		left = std::shared_ptr<Expr>(new Binary(op, left, right));
+		left = ExprPtr(new Binary(op, left, right));
 	}
 
 	return left;
 }
 
-std::shared_ptr<Expr> Parser::factor() {
-	std::shared_ptr<Expr> left = primary();
+ExprPtr Parser::factor() {
+	ExprPtr left = primary();
 	TokenType op;
 
 	while ((op = match(3, TokenType::STAR, TokenType::SLASH, TokenType::MOD))
 			!= TokenType::UNKNOWN) {
 		
-		std::shared_ptr<Expr> right = primary();
+		ExprPtr right = primary();
 
-		left = std::shared_ptr<Expr>(new Binary(op, right, left));
+		left = ExprPtr(new Binary(op, right, left));
 	}
 
 	return left;
 }
 
-std::shared_ptr<Expr> Parser::primary() {
-	if (match(TokenType::TRUE)) return std::shared_ptr<Expr>(new Primary(true));
-	if (match(TokenType::FALSE)) return std::shared_ptr<Expr>(new Primary(false));
+ExprPtr Parser::primary() {
+	if (match(TokenType::TRUE)) return ExprPtr(new Primary(true));
+	if (match(TokenType::FALSE)) return ExprPtr(new Primary(false));
 
 	// Variable resolution
 	if (peek().GetType() == TokenType::IDENTIFIER) {
@@ -224,18 +224,18 @@ std::shared_ptr<Expr> Parser::primary() {
 			throw makeCompilerError("Unkown identifier '" + name + "'."); 
 		}
 
-		return std::shared_ptr<Expr>(new Identifier(id));
+		return ExprPtr(new Identifier(id));
 	}
 
 	// Value constructor with no args constructs a nil value
-	if (match(TokenType::NIL)) return std::shared_ptr<Expr>(new Primary(Value()));
+	if (match(TokenType::NIL)) return ExprPtr(new Primary(Value()));
 
 	if (match(TokenType::LEFT_PAREN)) {
-		std::shared_ptr<Expr> expr = expression();
+		ExprPtr expr = expression();
 
 		consume(TokenType::RIGHT_PAREN, "Expected ')' after group.");
 
-		return std::shared_ptr<Expr>(new Grouping(expr));
+		return ExprPtr(new Grouping(expr));
 	}
 
 	if (peek().GetType() == TokenType::NUMBER) {
@@ -243,13 +243,13 @@ std::shared_ptr<Expr> Parser::primary() {
 	
 		// Implicit constructor, constructor to Value is being called
 		// with a double
-		return std::shared_ptr<Expr>(new Primary(number.GetValue()));
+		return ExprPtr(new Primary(number.GetValue()));
 	}
 
 	if (peek().GetType() == TokenType::STRING) {
 		Token str = advance();
 
-		return std::shared_ptr<Expr>(new Primary(str.GetLiteral()));
+		return ExprPtr(new Primary(str.GetLiteral()));
 	}
 
 	throw makeCompilerError("Unknown primary '" + peek().GetLiteral() + "'."); 

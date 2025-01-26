@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
     }
 
 	Parser parser(readFile(argv[1]));
-	std::vector<std::shared_ptr<Stmt>> statements;
+	std::vector<StmtPtr> statements;
 
 	try {
 		statements = parser.GetAst();

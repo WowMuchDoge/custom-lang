@@ -16,7 +16,7 @@ public:
 		m_scope.NewScope();
 	}
 
-	std::vector<std::shared_ptr<Stmt>> GetAst();
+	std::vector<StmtPtr> GetAst();
 private:
 	Token peek();
 	Token advance();
@@ -35,18 +35,18 @@ private:
 	void skipStatement();
 
 	// Statements
-	std::shared_ptr<Stmt> statement();
-	std::shared_ptr<Stmt> variableDeclaration();
-	std::shared_ptr<Stmt> printStatement();
-	std::shared_ptr<Stmt> blockStatement();
+	StmtPtr statement();
+	StmtPtr variableDeclaration();
+	StmtPtr printStatement();
+	StmtPtr blockStatement();
 
 	// Expressions
-	std::shared_ptr<Expr> expression();	
-	std::shared_ptr<Expr> logical();	
-	std::shared_ptr<Expr> comparison();
-	std::shared_ptr<Expr> term();
-	std::shared_ptr<Expr> factor();
-	std::shared_ptr<Expr> primary();
+	ExprPtr expression();	
+	ExprPtr logical();	
+	ExprPtr comparison();
+	ExprPtr term();
+	ExprPtr factor();
+	ExprPtr primary();
 
 	Scanner m_scanner;
 	Token m_next;

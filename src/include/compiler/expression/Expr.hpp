@@ -21,9 +21,11 @@ public:
 	virtual std::string ToString() = 0;
 };
 
+typedef std::shared_ptr<Expr> ExprPtr;
+
 class Binary : public Expr {
 public:
-	Binary(TokenType op, std::shared_ptr<Expr> left, std::shared_ptr<Expr> right)
+	Binary(TokenType op, ExprPtr left, ExprPtr right)
 		: m_op{op}, m_left{left}, m_right{right} {}
 	
 	ExprType GetExprType();
@@ -31,31 +33,31 @@ public:
 
 private:
 	TokenType m_op;
-	std::shared_ptr<Expr> m_right;
-	std::shared_ptr<Expr> m_left;
+	ExprPtr m_right;
+	ExprPtr m_left;
 };
 
 class Unary : public Expr {
 public:
-	Unary(TokenType op, std::shared_ptr<Expr> right) : m_op{op}, m_right{right} {}
+	Unary(TokenType op, ExprPtr right) : m_op{op}, m_right{right} {}
 
 	ExprType GetExprType();
 	std::string ToString();
 
 private:
 	TokenType m_op;
-	std::shared_ptr<Expr> m_right;
+	ExprPtr m_right;
 };
 
 class Grouping : public Expr {
 public:
-	Grouping(std::shared_ptr<Expr> expr) : m_expr{expr} {}
+	Grouping(ExprPtr expr) : m_expr{expr} {}
 
 	ExprType GetExprType();
 	std::string ToString();
 
 private:
-	std::shared_ptr<Expr> m_expr;
+	ExprPtr m_expr;
 };
 
 class Primary : public Expr {
