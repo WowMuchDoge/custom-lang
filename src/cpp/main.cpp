@@ -7,9 +7,15 @@
 #include "compiler/Parser.hpp"
 
 std::string getExtension(std::string fileName) {
-    int pos = fileName.find(".");
+	// find_last_of() does not work for some reason
 
-    if (pos == std::string::npos) return "";
+	int pos;
+
+	for (pos = fileName.size() - 1; pos >= 0; pos--) {
+		if (fileName[pos] == '.') break;
+	}
+
+	if (pos == -1) return "";
 
     return fileName.substr(pos, fileName.size() - pos);
 }
@@ -40,11 +46,18 @@ int main(int argc, char **argv) {
 		return -1;
     }
 
-	Parser parser("var a = nil == false == \"test\" == a;");
+	Parser parser(readFile(argv[1]));
+	std::vector<std::shared_ptr<Stmt>> statements;
 
-	std::shared_ptr<Stmt> stmt = parser.GetAst();
+	try {
+		statements = parser.GetAst();
+	} catch (Error* e) {
+		e->Print();
+	}
 
-	stmt->Print();
+	for (auto stmt : statements) {
+		stmt->Print();
+	}
 
 	return 0;
 }

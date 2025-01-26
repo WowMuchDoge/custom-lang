@@ -3,7 +3,6 @@
 #include <string>
 
 #include "error/Error.hpp"
-#include "scanner/Token.hpp"
 
 class ScannerError : public Error {
 public:

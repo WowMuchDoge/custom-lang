@@ -19,3 +19,14 @@ private:
 	// is declared (if there is any)
 	std::shared_ptr<Expr> m_expr;
 };
+
+class PrintStatement : public Stmt {
+public:
+	
+	PrintStatement(std::shared_ptr<Expr> printExpr) : m_expr{printExpr} {}
+
+	void Print();
+
+private:
+	std::shared_ptr<Expr> m_expr;
+};

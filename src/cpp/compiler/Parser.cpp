@@ -20,9 +20,13 @@ bool Parser::atEnd() {
 
 Token Parser::consume(TokenType type, std::string msg) {
 	if (peek().GetType() != type)
-		throw CompilerError(msg, m_scanner.GetLine());
+		throw makeCompilerError(msg);
 	
 	return advance();
+}
+
+void Parser::consumeSemicolon() {
+	consume(TokenType::SEMICOLON, "Expected ';' after statement");
 }
 
 TokenType Parser::match(int count, ...) {
@@ -49,13 +53,33 @@ bool Parser::match(TokenType type) {
 	return false;
 }
 
-std::shared_ptr<Stmt> Parser::GetAst() {
-	return variableDeclaration();
+CompilerError* Parser::makeCompilerError(std::string message) {
+	m_error = CompilerError(message, m_scanner.GetLine());
+	return &m_error;
+}
+
+std::vector<std::shared_ptr<Stmt>> Parser::GetAst() {
+	std::vector<std::shared_ptr<Stmt>> program;
+	
+	while (!atEnd()) {
+		program.push_back(statement());
+	}
+
+	return program;
+}
+
+std::shared_ptr<Stmt> Parser::statement() {
+	if (match(TokenType::VAR)) {
+		return variableDeclaration();
+	} else if (match(TokenType::PRINT)) {
+		return printStatement();
+	}
+
+	throw makeCompilerError("Unexpected token '" + peek().GetLiteral() + "'.");
 }
 
 std::shared_ptr<Stmt> Parser::variableDeclaration() {
-	consume(TokenType::VAR, "Expected keyword 'var' before variable declaration.");
-	Token var = consume(TokenType::IDENTIFIER, "Unexpected keyword in variable declaration.");
+	Token var = consume(TokenType::IDENTIFIER, "Unexpected keyword '" + peek().GetLiteral() + "' in variable declaration.");
 
 	m_scope.Push(var.GetLiteral());
 
@@ -67,9 +91,21 @@ std::shared_ptr<Stmt> Parser::variableDeclaration() {
 		expr = expression();
 	}
 
-	consume(TokenType::SEMICOLON, "Expected ';' after variable declaration.");
+	consumeSemicolon();
 
 	return std::shared_ptr<Stmt>(new VariableDeclaration(expr));
+}
+
+std::shared_ptr<Stmt> Parser::printStatement() {
+	consume(TokenType::LEFT_PAREN, "Expected '(' after print statement.");
+
+	std::shared_ptr<Expr> expr = expression();
+
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after expression.");
+
+	consumeSemicolon();
+
+	return std::shared_ptr<Stmt>(new PrintStatement(expr));
 }
 
 std::shared_ptr<Expr> Parser::expression() {
@@ -177,5 +213,5 @@ std::shared_ptr<Expr> Parser::primary() {
 		return std::shared_ptr<Expr>(new Primary(str.GetLiteral()));
 	}
 
-	throw CompilerError("Unknown primary.", m_scanner.GetLine());
+	throw makeCompilerError("Unknown primary."); 
 }
