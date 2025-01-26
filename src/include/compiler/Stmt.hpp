@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "compiler/expression/Expr.hpp"
 
 class Stmt {
@@ -29,4 +31,13 @@ public:
 
 private:
 	std::shared_ptr<Expr> m_expr;
+};
+
+class BlockStatement : public Stmt {
+public:	
+	BlockStatement(std::vector<std::shared_ptr<Stmt>> statements) : m_statements{statements} {}
+	
+	void Print();
+private:
+	std::vector<std::shared_ptr<Stmt>> m_statements;
 };

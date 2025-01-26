@@ -29,11 +29,13 @@ private:
 	bool match(TokenType type);
 
 	CompilerError* makeCompilerError(std::string message);
+	CompilerError* makeCompilerError(std::string message, int line);
 
 	// Statements
 	std::shared_ptr<Stmt> statement();
 	std::shared_ptr<Stmt> variableDeclaration();
 	std::shared_ptr<Stmt> printStatement();
+	std::shared_ptr<Stmt> blockStatement();
 
 	// Expressions
 	std::shared_ptr<Expr> expression();	

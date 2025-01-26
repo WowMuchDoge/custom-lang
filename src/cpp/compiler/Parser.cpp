@@ -58,6 +58,11 @@ CompilerError* Parser::makeCompilerError(std::string message) {
 	return &m_error;
 }
 
+CompilerError* Parser::makeCompilerError(std::string message, int line) {
+	m_error = CompilerError(message, line);
+	return &m_error;
+}
+
 std::vector<std::shared_ptr<Stmt>> Parser::GetAst() {
 	std::vector<std::shared_ptr<Stmt>> program;
 	
@@ -73,6 +78,8 @@ std::shared_ptr<Stmt> Parser::statement() {
 		return variableDeclaration();
 	} else if (match(TokenType::PRINT)) {
 		return printStatement();
+	} else if (match(TokenType::LEFT_BRACE)) {
+		return blockStatement();
 	}
 
 	throw makeCompilerError("Unexpected token '" + peek().GetLiteral() + "'.");
@@ -106,6 +113,24 @@ std::shared_ptr<Stmt> Parser::printStatement() {
 	consumeSemicolon();
 
 	return std::shared_ptr<Stmt>(new PrintStatement(expr));
+}
+
+std::shared_ptr<Stmt> Parser::blockStatement() {
+	int startLine = m_scanner.GetLine();
+	
+	std::vector<std::shared_ptr<Stmt>> statements;	
+
+	while (peek().GetType() != TokenType::RIGHT_BRACE) {
+		if (atEnd()) {
+			throw makeCompilerError("Expected '}' after block.", startLine);
+		}
+		
+		statements.push_back(statement());
+	}
+	
+	consume(TokenType::RIGHT_BRACE, "Expected '}' after block."); 
+
+	return std::shared_ptr<Stmt>(new BlockStatement(statements));
 }
 
 std::shared_ptr<Expr> Parser::expression() {
@@ -182,7 +207,7 @@ std::shared_ptr<Expr> Parser::primary() {
 		int id;
 
 		if ((id = m_scope.Resolve(name)) == -1) {
-			throw CompilerError("Unkown identifier " + name + ".", m_scanner.GetLine());
+			throw makeCompilerError("Unkown identifier '" + name + "'."); 
 		}
 
 		return std::shared_ptr<Expr>(new Identifier(id));
@@ -213,5 +238,5 @@ std::shared_ptr<Expr> Parser::primary() {
 		return std::shared_ptr<Expr>(new Primary(str.GetLiteral()));
 	}
 
-	throw makeCompilerError("Unknown primary."); 
+	throw makeCompilerError("Unknown primary '" + peek().GetLiteral() + "'."); 
 }

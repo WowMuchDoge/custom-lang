@@ -9,3 +9,14 @@ void VariableDeclaration::Print() {
 void PrintStatement::Print() {
 	std::cout << "Print statement, expr = " << m_expr->ToString() << std::endl;
 }
+
+void BlockStatement::Print() {
+	std::cout << "Block statement, statements = {\n";
+
+	for (auto statement : m_statements) {
+		std::cout << "	";
+		statement->Print();
+	}
+
+	std::cout << "}" << std::endl;
+}
