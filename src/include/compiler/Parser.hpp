@@ -31,6 +31,9 @@ private:
 	CompilerError* makeCompilerError(std::string message);
 	CompilerError* makeCompilerError(std::string message, int line);
 
+	// If an error is encountered, we just go to the end of the expression
+	void skipStatement();
+
 	// Statements
 	std::shared_ptr<Stmt> statement();
 	std::shared_ptr<Stmt> variableDeclaration();

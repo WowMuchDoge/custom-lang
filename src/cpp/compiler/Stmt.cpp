@@ -14,7 +14,7 @@ void BlockStatement::Print() {
 	std::cout << "Block statement, statements = {\n";
 
 	for (auto statement : m_statements) {
-		std::cout << "	";
+		std::cout << "    ";
 		statement->Print();
 	}
 

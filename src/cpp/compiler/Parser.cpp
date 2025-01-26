@@ -63,11 +63,20 @@ CompilerError* Parser::makeCompilerError(std::string message, int line) {
 	return &m_error;
 }
 
+void Parser::skipStatement() {
+	while (!atEnd() && advance().GetType() != TokenType::SEMICOLON);
+}
+
 std::vector<std::shared_ptr<Stmt>> Parser::GetAst() {
 	std::vector<std::shared_ptr<Stmt>> program;
 	
 	while (!atEnd()) {
-		program.push_back(statement());
+		try {
+			program.push_back(statement());
+		} catch (CompilerError* e) {
+			e->Print();
+			skipStatement();
+		}
 	}
 
 	return program;
@@ -124,8 +133,13 @@ std::shared_ptr<Stmt> Parser::blockStatement() {
 		if (atEnd()) {
 			throw makeCompilerError("Expected '}' after block.", startLine);
 		}
-		
-		statements.push_back(statement());
+	
+		try {
+			statements.push_back(statement());
+		} catch (CompilerError *e) {
+			e->Print();
+			skipStatement();
+		}
 	}
 	
 	consume(TokenType::RIGHT_BRACE, "Expected '}' after block."); 
