@@ -1,22 +1,26 @@
 #include "compiler/Stmt.hpp"
 
-#include <iostream>
+std::string VariableDeclaration::ToString(int depth = 0) {
+	std::string prefix = std::string(" ", depth);
 
-void VariableDeclaration::Print() {
-	std::cout << "Variable declaration, expr = " << m_expr->ToString() << std::endl;
+	return prefix + "Variable declaration, expr = " + m_expr->ToString();
 }
 
-void PrintStatement::Print() {
-	std::cout << "Print statement, expr = " << m_expr->ToString() << std::endl;
+std::string PrintStatement::ToString(int depth = 0) {
+	std::string prefix = std::string(" ", depth);
+
+	return prefix + "Print statement, expr = " + m_expr->ToString();
 }
 
-void BlockStatement::Print() {
-	std::cout << "Block statement, statements = {\n";
+std::string BlockStatement::ToString(int depth = 0) {
+	std::string prefix = std::string(" ", depth);
+	std::string output = prefix + "Block statement, statements = {\n";
 
 	for (auto statement : m_statements) {
-		std::cout << "    ";
-		statement->Print();
+		output += prefix + statement->ToString(depth + 1) + '\n';
 	}
 
-	std::cout << "}" << std::endl;
+	output += prefix + "}";
+
+	return output;
 }

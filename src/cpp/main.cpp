@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
 	}
 
 	for (auto stmt : statements) {
-		stmt->Print();
+		std::cout << stmt->ToString() << std::endl;
 	}
 
 	return 0;
