@@ -61,34 +61,6 @@ std::string WhileStatement::ToString(int depth = 0) {
 	return output;
 }
 
-std::string ForStatement::ToString(int depth = 0) {
-	std::string prefix(" ", depth);
-
-	std::string output = prefix + "For statement, assignments = [\n";
-	
-	for (ExprPtr assignment : m_variableAssignments) {
-		output += prefix + " " + assignment->ToString() + "\n";
-	}
-
-	output += prefix + "] Declarations = [\n";
-
-	for (StmtPtr dec : m_variableDeclarations) {
-		output += prefix + dec->ToString(depth + 1) + "\n";
-	}
-
-	output += "] Condition = " + m_condition->ToString() + "\n";
-
-	output += "Changes = [\n";
-	
-	for (ExprPtr change : m_changes) {
-		output += prefix + " " + change->ToString() + "\n";
-	}
-
-	output += "] Statement = " + m_statement->ToString(depth + 1) + "\n";
-
-	return output;
-}
-
 std::string ExpressionStatement::ToString(int depth = 0) {
 	return std::string(" ", depth) + "Expression statement, expression = " + m_expr->ToString() + "\n";
 }

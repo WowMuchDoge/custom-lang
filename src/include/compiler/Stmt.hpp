@@ -84,37 +84,13 @@ private:
 	StmtPtr m_stmt;
 };
 
-class ForStatement : public Stmt {
-public:
-	ForStatement(std::vector<StmtPtr> varDecs, std::vector<ExprPtr> varAsmts, ExprPtr condition, std::vector<ExprPtr> changes, StmtPtr stmt)
-		: m_variableDeclarations{varDecs}, m_variableAssignments{varAsmts}, m_condition{condition}, m_changes{changes}, m_statement{stmt} {}
-
-	std::string ToString(int depth);
-private:
-	// The first part of the for loop, this would
-	// be where we are intializing stuff. The reason
-	// there could be expressions is that variable
-	// assignment is an expression which should be
-	// valid in a C-style for loop.
-	std::vector<StmtPtr> m_variableDeclarations;
-	std::vector<ExprPtr> m_variableAssignments;
-
-	// The test condition of the for loop
-	ExprPtr m_condition;
-
-	// The part of the expression that will change,
-	// like i = i + 1. It is a vector since you could
-	// have multiple changes, like `i = i + 1, j = j + 1`
-	std::vector<ExprPtr> m_changes;
-
-	StmtPtr m_statement;
-};
-
 class ExpressionStatement : public Stmt {
 public:
 	ExpressionStatement(ExprPtr expr) : m_expr{expr} {}
 
 	std::string ToString(int depth);
+
+	ExprPtr GetExpr() { return m_expr; }
 private:
 	ExprPtr m_expr;
 };

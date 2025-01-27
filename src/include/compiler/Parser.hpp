@@ -46,7 +46,7 @@ private:
 	StmtPtr ifStatement();
 	StmtPtr whileStatement();
 	StmtPtr forStatement();
-	StmtPtr expressionStatement();
+	StmtPtr expressionStatement(bool requireSemicolon = true);
 	
 	// Expressions
 	ExprPtr expression();	

@@ -209,57 +209,54 @@ StmtPtr Parser::whileStatement() {
 }
 
 StmtPtr Parser::forStatement() {
+	std::vector<StmtPtr> outer;
+	ExprPtr condition;
+	std::vector<StmtPtr> block;
+
 	consume(TokenType::LEFT_PAREN, "Expected '(' after for statement.");
 
-	std::vector<StmtPtr> varDecs;
-	std::vector<ExprPtr> exprAsmts;
-	ExprPtr condition;
+	std::vector<StmtPtr> outerBlock;
 
-	std::vector<ExprPtr> changes;
-
-	StmtPtr stmt;
-
-	Token tkn;
-
-	while (peek().GetType() == TokenType::VAR || peek().GetType() == TokenType::IDENTIFIER) {
+	while (true) {
 		if (match(TokenType::VAR)) {
-			varDecs.push_back(variableDeclaration(false));
-		} else if (peek().GetType() == TokenType::IDENTIFIER) {
-			exprAsmts.push_back(expression());
+			outer.push_back(variableDeclaration(false));
+		} else {
+			outer.push_back(expressionStatement(false));
 		}
 
 		if (!match(TokenType::COMMA)) break;
 	}
 
 	consumeSemicolon();
-	
+
 	condition = expression();
 
 	consumeSemicolon();
 
-	int startLine = m_scanner.GetLine();
-
 	while (true) {
-		if (atEnd()) {
-			// Very unlikely that they forgot to put a ')' and only have expressions but
-			// ya never know
-			throw makeCompilerError("Expected ')' in while condition.", startLine);
-		}
-
-		changes.push_back(expression());
+		block.push_back(expressionStatement(false));
 
 		if (!match(TokenType::COMMA)) break;
 	}
 
-	consume(TokenType::RIGHT_PAREN, "Expected ')' after for loop."); 
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after for statement.");
 
-	stmt = statement();
+	StmtPtr stmt = statement();
 
-	return StmtPtr(new ForStatement(varDecs, exprAsmts, condition, changes, stmt));
+	block.insert(block.begin(), stmt);
+	
+	StmtPtr whileStmt(new WhileStatement(condition, stmt));
+
+	outer.push_back(whileStmt);
+
+	return StmtPtr(new BlockStatement(outer));
 }
 
-StmtPtr Parser::expressionStatement() {
-	return StmtPtr(new ExpressionStatement(expression()));
+StmtPtr Parser::expressionStatement(bool requireSemicolon) {
+	ExprPtr expr = expression();
+	if (requireSemicolon) consumeSemicolon();
+
+	return StmtPtr(new ExpressionStatement(expr));
 }
 
 ExprPtr Parser::expression() {
