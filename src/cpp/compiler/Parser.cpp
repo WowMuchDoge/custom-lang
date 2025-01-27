@@ -8,9 +8,14 @@ Token Parser::peek() {
 	return m_next;
 }
 
+Token Parser::peekNext() {
+	return m_twoNext;
+}
+
 Token Parser::advance() {
 	m_prev = m_next;
-	m_next = m_scanner.ScanToken();
+	m_next = m_twoNext;
+	m_twoNext = m_scanner.ScanToken();
 	return m_prev;
 }
 
@@ -46,6 +51,16 @@ TokenType Parser::match(int count, ...) {
 
 bool Parser::match(TokenType type) {
 	if (peek().GetType() == type) {
+		advance();
+		return true;
+	}
+
+	return false;
+}
+
+bool Parser::matchTwo(TokenType t1, TokenType t2) {
+	if (peek().GetType() == t1 && peekNext().GetType() == t2) {
+		advance();
 		advance();
 		return true;
 	}
@@ -89,6 +104,9 @@ StmtPtr Parser::statement() {
 		return printStatement();
 	} else if (match(TokenType::LEFT_BRACE)) {
 		return blockStatement();
+	} else if (match(TokenType::IF)) {
+		// std::cout << "Prev = " << m_prev.GetLiteral() << ", Next = " << m_next.GetLiteral() << std::endl;
+		return ifStatement();
 	}
 
 	throw makeCompilerError("Unexpected token '" + peek().GetLiteral() + "'.");
@@ -147,6 +165,36 @@ StmtPtr Parser::blockStatement() {
 	return StmtPtr(new BlockStatement(statements));
 }
 
+StmtPtr Parser::ifStatement() {
+	std::vector<IfObject> ifs;
+
+	consume(TokenType::LEFT_PAREN, "Expected '(' after if statement.");
+
+	ExprPtr expr = expression();
+	
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after expression.");
+
+	ifs.push_back(IfObject(expr, statement()));
+
+	// std::cout << "Peeking at '" << peek().GetLiteral() << "'." << std::endl;
+
+	while (matchTwo(TokenType::ELSE, TokenType::IF)) {
+		consume(TokenType::LEFT_PAREN, "Expected '(' after if statement.");
+
+		expr = expression();
+		
+		consume(TokenType::RIGHT_PAREN, "Expected ')' after expression.");
+		
+		ifs.push_back(IfObject(expr, statement()));
+	}
+
+	if (match(TokenType::ELSE)) {
+		ifs.push_back(IfObject(std::nullopt, statement()));
+	}
+
+	return StmtPtr(new IfStatement(ifs));
+}
+
 ExprPtr Parser::expression() {
 	return logical();
 }
@@ -170,8 +218,8 @@ ExprPtr Parser::comparison() {
 	ExprPtr left = term();
 	TokenType op;
 
-	while ((op = match(4, TokenType::EQUAL_EQUAL, TokenType::BANG_EQUAL, 
-			TokenType::GREATER_EQUAL, TokenType::LESS_EQUAL)) != TokenType::UNKNOWN) {
+	while ((op = match(6, TokenType::EQUAL_EQUAL, TokenType::BANG_EQUAL, TokenType::GREATER_EQUAL, TokenType::LESS_EQUAL, 
+					TokenType::GREATER, TokenType::LESS)) != TokenType::UNKNOWN) {
 		
 		ExprPtr right = term();
 

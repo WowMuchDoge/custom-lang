@@ -1,8 +1,5 @@
 #pragma once
 
-#include <memory.h>
-#include <memory>
-
 #include "scanner/Scanner.hpp"
 #include "compiler/ScopeStack.hpp"
 #include "compiler/expression/Expr.hpp"
@@ -11,14 +8,19 @@
 
 class Parser {
 public:
-	Parser(std::string source) : m_scanner{source}, m_next{m_scanner.ScanToken()}, m_error{"", 0} {
+	Parser(std::string source) : m_scanner{source}, m_error{"", 0} {
 		// Inserting global scope
 		m_scope.NewScope();
+
+		// Making sure tokens are properly handled
+		m_next = m_scanner.ScanToken();
+		m_twoNext = m_scanner.ScanToken();
 	}
 
 	std::vector<StmtPtr> GetAst();
 private:
 	Token peek();
+	Token peekNext();
 	Token advance();
 	bool atEnd();
 
@@ -27,6 +29,8 @@ private:
 
 	TokenType match(int count, ...);
 	bool match(TokenType type);
+	// Matches multiple tokens in succession, like `if else`
+	bool matchTwo(TokenType t1, TokenType t2);
 
 	CompilerError* makeCompilerError(std::string message);
 	CompilerError* makeCompilerError(std::string message, int line);
@@ -39,6 +43,7 @@ private:
 	StmtPtr variableDeclaration();
 	StmtPtr printStatement();
 	StmtPtr blockStatement();
+	StmtPtr ifStatement();
 
 	// Expressions
 	ExprPtr expression();	
@@ -49,6 +54,7 @@ private:
 	ExprPtr primary();
 
 	Scanner m_scanner;
+	Token m_twoNext;
 	Token m_next;
 	Token m_prev;
 	

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <optional>
 
 #include "compiler/expression/Expr.hpp"
 
@@ -45,11 +46,30 @@ private:
 	std::vector<StmtPtr> m_statements;
 };
 
+class IfObject {
+public:
+	IfObject(std::optional<ExprPtr> expr, StmtPtr statement) : m_expr{expr}, m_statement{statement} {}
+
+	std::string ToString(int depth);
+
+	bool IsElse() { return !m_expr.has_value(); }
+
+	// Will throw an error if trying to get this from an else statement
+	ExprPtr GetExpr() { return m_expr.value(); }
+
+	StmtPtr GetStmt() { return m_statement; }
+private:
+
+	// There would be no expression in an `else` control path
+	std::optional<ExprPtr> m_expr;
+	StmtPtr m_statement;
+};
+
 class IfStatement : public Stmt {
 public:
+	IfStatement(std::vector<IfObject> ifChain) : m_ifChain{ifChain} {}
 
+	std::string ToString(int depth);
 private:
-	StmtPtr m_intialIf;
-	std::vector<StmtPtr> m_ifElses;
-	StmtPtr m_else;
+	std::vector<IfObject> m_ifChain;
 };

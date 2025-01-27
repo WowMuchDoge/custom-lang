@@ -24,3 +24,30 @@ std::string BlockStatement::ToString(int depth = 0) {
 
 	return output;
 }
+
+std::string IfObject::ToString(int depth = 0) {
+	std::string prefix = std::string(" ", depth);
+	std::string output = prefix;
+
+	if (m_expr.has_value()) {
+		output += "If path, expression = " + m_expr.value()->ToString() + ", Statement =\n";
+	} else {
+		output += "Else path, Statement =\n";
+	}
+
+	output += m_statement->ToString(depth + 1) + "\n";
+
+	return output;
+}
+
+std::string IfStatement::ToString(int depth = 0) {
+	std::string prefix = std::string(" ", depth);
+
+	std::string output = prefix + "If Statements, objects = \n";
+
+	for (IfObject obj : m_ifChain) {
+		output += obj.ToString(depth + 1);
+	}
+
+	return output;
+}
