@@ -40,17 +40,22 @@ private:
 
 	// Statements
 	StmtPtr statement();
-	StmtPtr variableDeclaration();
+	StmtPtr variableDeclaration(bool requireSemicolon = true);
 	StmtPtr printStatement();
 	StmtPtr blockStatement();
 	StmtPtr ifStatement();
-
+	StmtPtr whileStatement();
+	StmtPtr forStatement();
+	StmtPtr expressionStatement();
+	
 	// Expressions
 	ExprPtr expression();	
+	ExprPtr assignment();
 	ExprPtr logical();	
 	ExprPtr comparison();
 	ExprPtr term();
 	ExprPtr factor();
+	ExprPtr unary();
 	ExprPtr primary();
 
 	Scanner m_scanner;

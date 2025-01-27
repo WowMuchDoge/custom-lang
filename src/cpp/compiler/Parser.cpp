@@ -31,7 +31,7 @@ Token Parser::consume(TokenType type, std::string msg) {
 }
 
 void Parser::consumeSemicolon() {
-	consume(TokenType::SEMICOLON, "Expected ';' after statement");
+	consume(TokenType::SEMICOLON, "Expected ';' after statement.");
 }
 
 TokenType Parser::match(int count, ...) {
@@ -100,19 +100,22 @@ std::vector<StmtPtr> Parser::GetAst() {
 StmtPtr Parser::statement() {
 	if (match(TokenType::VAR)) {
 		return variableDeclaration();
-	} else if (match(TokenType::PRINT)) {
+} else if (match(TokenType::PRINT)) {
 		return printStatement();
 	} else if (match(TokenType::LEFT_BRACE)) {
 		return blockStatement();
 	} else if (match(TokenType::IF)) {
-		// std::cout << "Prev = " << m_prev.GetLiteral() << ", Next = " << m_next.GetLiteral() << std::endl;
 		return ifStatement();
+	} else if (match(TokenType::WHILE)) {
+		return whileStatement();
+	} else if (match(TokenType::FOR)) {
+		return forStatement();
+	} else {
+		return expressionStatement();
 	}
-
-	throw makeCompilerError("Unexpected token '" + peek().GetLiteral() + "'.");
 }
 
-StmtPtr Parser::variableDeclaration() {
+StmtPtr Parser::variableDeclaration(bool requireSemicolon) {
 	Token var = consume(TokenType::IDENTIFIER, "Unexpected keyword '" + peek().GetLiteral() + "' in variable declaration.");
 
 	m_scope.Push(var.GetLiteral());
@@ -125,7 +128,7 @@ StmtPtr Parser::variableDeclaration() {
 		expr = expression();
 	}
 
-	consumeSemicolon();
+	if (requireSemicolon) consumeSemicolon();
 
 	return StmtPtr(new VariableDeclaration(expr));
 }
@@ -176,8 +179,6 @@ StmtPtr Parser::ifStatement() {
 
 	ifs.push_back(IfObject(expr, statement()));
 
-	// std::cout << "Peeking at '" << peek().GetLiteral() << "'." << std::endl;
-
 	while (matchTwo(TokenType::ELSE, TokenType::IF)) {
 		consume(TokenType::LEFT_PAREN, "Expected '(' after if statement.");
 
@@ -195,8 +196,89 @@ StmtPtr Parser::ifStatement() {
 	return StmtPtr(new IfStatement(ifs));
 }
 
+StmtPtr Parser::whileStatement() {
+	consume(TokenType::LEFT_PAREN, "Expected '(' after while statement.");
+
+	ExprPtr expr = expression();
+
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after while expression.");
+
+	StmtPtr stmt = statement();
+
+	return StmtPtr(new WhileStatement(expr, stmt));
+}
+
+StmtPtr Parser::forStatement() {
+	consume(TokenType::LEFT_PAREN, "Expected '(' after for statement.");
+
+	std::vector<StmtPtr> varDecs;
+	std::vector<ExprPtr> exprAsmts;
+	ExprPtr condition;
+
+	std::vector<ExprPtr> changes;
+
+	StmtPtr stmt;
+
+	Token tkn;
+
+	while (peek().GetType() == TokenType::VAR || peek().GetType() == TokenType::IDENTIFIER) {
+		if (match(TokenType::VAR)) {
+			varDecs.push_back(variableDeclaration(false));
+		} else if (peek().GetType() == TokenType::IDENTIFIER) {
+			exprAsmts.push_back(expression());
+		}
+
+		if (!match(TokenType::COMMA)) break;
+	}
+
+	consumeSemicolon();
+	
+	condition = expression();
+
+	consumeSemicolon();
+
+	int startLine = m_scanner.GetLine();
+
+	while (true) {
+		if (atEnd()) {
+			// Very unlikely that they forgot to put a ')' and only have expressions but
+			// ya never know
+			throw makeCompilerError("Expected ')' in while condition.", startLine);
+		}
+
+		changes.push_back(expression());
+
+		if (!match(TokenType::COMMA)) break;
+	}
+
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after for loop."); 
+
+	stmt = statement();
+
+	return StmtPtr(new ForStatement(varDecs, exprAsmts, condition, changes, stmt));
+}
+
+StmtPtr Parser::expressionStatement() {
+	return StmtPtr(new ExpressionStatement(expression()));
+}
+
 ExprPtr Parser::expression() {
-	return logical();
+	return assignment();
+}
+
+ExprPtr Parser::assignment() {
+	ExprPtr left = logical();
+
+	// Assignment is right associative, so a = b = c should
+	// be a = (b = c); this differs from addition which evaluates
+	// like a + b + c is (a + b) + c. This is why we have to
+	// make this recursive call
+	if (match(TokenType::EQUAL)) {
+		ExprPtr right = assignment();
+		return ExprPtr(new Binary(TokenType::EQUAL, left, right));
+	}
+
+	return left;
 }
 
 ExprPtr Parser::logical() {
@@ -245,18 +327,30 @@ ExprPtr Parser::term() {
 }
 
 ExprPtr Parser::factor() {
-	ExprPtr left = primary();
+	ExprPtr left = unary();
 	TokenType op;
 
 	while ((op = match(3, TokenType::STAR, TokenType::SLASH, TokenType::MOD))
 			!= TokenType::UNKNOWN) {
 		
-		ExprPtr right = primary();
+		ExprPtr right = unary();
 
 		left = ExprPtr(new Binary(op, right, left));
 	}
 
 	return left;
+}
+
+ExprPtr Parser::unary() {
+	TokenType op;
+
+	if ((op = match(2, TokenType::BANG, TokenType::MINUS)) != TokenType::UNKNOWN) {
+		ExprPtr right = primary();
+
+		return ExprPtr(new Unary(op, right));
+	}
+
+	return primary();
 }
 
 ExprPtr Parser::primary() {
