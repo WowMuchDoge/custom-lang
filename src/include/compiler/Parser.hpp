@@ -29,6 +29,7 @@ private:
 
 	TokenType match(int count, ...);
 	bool match(TokenType type);
+
 	// Matches multiple tokens in succession, like `if else`
 	bool matchTwo(TokenType t1, TokenType t2);
 
@@ -47,7 +48,8 @@ private:
 	StmtPtr whileStatement();
 	StmtPtr forStatement();
 	StmtPtr expressionStatement(bool requireSemicolon = true);
-	
+	StmtPtr functionDeclaration();
+
 	// Expressions
 	ExprPtr expression();	
 	ExprPtr assignment();

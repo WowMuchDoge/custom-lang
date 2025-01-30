@@ -94,3 +94,14 @@ public:
 private:
 	ExprPtr m_expr;
 };
+
+class FunctionDeclaration : public Stmt {
+public:
+	FunctionDeclaration(std::vector<std::string> params, BlockStatement block) 
+		: m_params{params}, m_block{block} {}
+
+	std::string ToString(int detph);
+private:
+	std::vector<std::string> m_params;
+	BlockStatement m_block;
+};

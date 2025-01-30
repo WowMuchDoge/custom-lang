@@ -19,6 +19,11 @@ Value::Value(std::string str) {
 	m_value = str;
 }
 
+Value::Value(int id) {
+	m_type = ValueType::FUNCTION;
+	m_value = id;
+}
+
 void Value::SetNumber(double val) {
 	m_type = ValueType::NUMBER;
 	m_value = val;
@@ -34,6 +39,11 @@ void Value::SetBoolean(bool b) {
 void Value::SetString(std::string str) {
 	m_type = ValueType::STRING;
 	m_value = str;
+}
+
+void Value::SetFunction(int id) {
+	m_type = ValueType::FUNCTION;
+	m_value = id;
 }
 
 void Value::SetNil() {
@@ -54,4 +64,8 @@ bool Value::GetBoolean() {
 
 std::string Value::GetString() {
 	return std::get<std::string>(m_value);
+}
+
+int Value::GetFunctionId() {
+	return std::get<int>(m_value);
 }

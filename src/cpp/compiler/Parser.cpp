@@ -110,6 +110,8 @@ StmtPtr Parser::statement() {
 		return whileStatement();
 	} else if (match(TokenType::FOR)) {
 		return forStatement();
+	} else if (match(TokenType::FN)) {
+		return functionDeclaration();
 	} else {
 		return expressionStatement();
 	}
@@ -147,7 +149,9 @@ StmtPtr Parser::printStatement() {
 
 StmtPtr Parser::blockStatement() {
 	int startLine = m_scanner.GetLine();
-	
+
+	m_scope.NewScope();
+
 	std::vector<StmtPtr> statements;	
 
 	while (peek().GetType() != TokenType::RIGHT_BRACE) {
@@ -162,6 +166,8 @@ StmtPtr Parser::blockStatement() {
 			skipStatement();
 		}
 	}
+
+	m_scope.EndScope();
 	
 	consume(TokenType::RIGHT_BRACE, "Expected '}' after block."); 
 
@@ -208,6 +214,7 @@ StmtPtr Parser::whileStatement() {
 	return StmtPtr(new WhileStatement(expr, stmt));
 }
 
+
 StmtPtr Parser::forStatement() {
 	std::vector<StmtPtr> outer;
 	ExprPtr condition;
@@ -249,6 +256,11 @@ StmtPtr Parser::forStatement() {
 
 	outer.push_back(whileStmt);
 
+	// There is no `for statement` object, it is just a while loop
+	// with some pretty syntax. The equivelent to 
+	// `for (var i = 0; i < 10; i = i + 1) print(i);` would
+	// be `{ var i = 0; while (i < 10) { print(i); i = i + 1; } }
+
 	return StmtPtr(new BlockStatement(outer));
 }
 
@@ -257,6 +269,40 @@ StmtPtr Parser::expressionStatement(bool requireSemicolon) {
 	if (requireSemicolon) consumeSemicolon();
 
 	return StmtPtr(new ExpressionStatement(expr));
+}
+
+StmtPtr Parser::functionDeclaration() {
+	std::string functionName = consume(TokenType::IDENTIFIER, "Expected identifier after 'func'.").GetLiteral();
+
+	consume(TokenType::LEFT_PAREN, "Expected '(' after function name.");
+
+	std::vector<std::string> params;
+	std::vector<StmtPtr> functionBlock;
+
+	m_scope.NewScope();
+
+	while (peek().GetType() == TokenType::IDENTIFIER) {
+		Token param = advance();
+
+		m_scope.Push(param.GetLiteral());
+		functionBlock.push_back(StmtPtr(new VariableDeclaration(ExprPtr(new Primary(Value()))))); // Empty value contructor gives `nil` value
+		params.push_back(param.GetLiteral());
+
+		if (!match(TokenType::COMMA)) break;
+	}
+
+	consume(TokenType::RIGHT_PAREN, "Expected ')' after params");
+
+	consume(TokenType::LEFT_BRACE, "Expected '{' in function declaration.");
+
+	// This will put the params in a scope that is one above the function scope
+	functionBlock.push_back(blockStatement());
+
+	m_scope.EndScope();
+
+	BlockStatement block(functionBlock);
+
+	return StmtPtr(new FunctionDeclaration(params, block));
 }
 
 ExprPtr Parser::expression() {
@@ -387,7 +433,6 @@ ExprPtr Parser::primary() {
 
 	if (peek().GetType() == TokenType::STRING) {
 		Token str = advance();
-
 		return ExprPtr(new Primary(str.GetLiteral()));
 	}
 

@@ -64,3 +64,17 @@ std::string WhileStatement::ToString(int depth = 0) {
 std::string ExpressionStatement::ToString(int depth = 0) {
 	return std::string(" ", depth) + "Expression statement, expression = " + m_expr->ToString() + "\n";
 }
+
+std::string FunctionDeclaration::ToString(int depth = 0) {
+	std::string prefix(" ", depth);
+
+	std::string output = prefix + "Function Declaration, params = \n" + prefix;
+
+	for (std::string param : m_params) {
+		output += param + " ";
+	}
+
+	output += "\nBlock = " + m_block.ToString(depth + 1);
+
+	return output;
+}
