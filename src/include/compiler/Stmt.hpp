@@ -105,3 +105,12 @@ private:
 	std::vector<std::string> m_params;
 	BlockStatement m_block;
 };
+
+class ReturnStatement : public Stmt {
+public:
+	ReturnStatement(ExprPtr expr) : m_returnExpr{expr} {}
+
+	std::string ToString(int depth);
+private:
+	ExprPtr m_returnExpr;
+};

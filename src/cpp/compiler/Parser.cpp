@@ -112,6 +112,8 @@ StmtPtr Parser::statement() {
 		return forStatement();
 	} else if (match(TokenType::FN)) {
 		return functionDeclaration();
+	} else if (match(TokenType::RETURN)) {
+		return returnStatement();
 	} else {
 		return expressionStatement();
 	}
@@ -305,6 +307,18 @@ StmtPtr Parser::functionDeclaration() {
 	return StmtPtr(new FunctionDeclaration(params, block));
 }
 
+StmtPtr Parser::returnStatement() {
+
+	ExprPtr expr(new Primary(Value()));
+
+	if (peek().GetType() != TokenType::SEMICOLON)
+		expr = expression();
+	
+	consumeSemicolon();
+
+	return StmtPtr(new ReturnStatement(expr));
+}
+
 ExprPtr Parser::expression() {
 	return assignment();
 }
@@ -434,6 +448,10 @@ ExprPtr Parser::primary() {
 	if (peek().GetType() == TokenType::STRING) {
 		Token str = advance();
 		return ExprPtr(new Primary(str.GetLiteral()));
+	}
+
+	if (peek().GetType() == TokenType::IDENTIFIER) {
+		throw makeCompilerError("Unknown identifier '" + peek().GetLiteral() + "'."); 
 	}
 
 	throw makeCompilerError("Unknown primary '" + peek().GetLiteral() + "'."); 

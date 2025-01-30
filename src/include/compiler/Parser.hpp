@@ -49,6 +49,7 @@ private:
 	StmtPtr forStatement();
 	StmtPtr expressionStatement(bool requireSemicolon = true);
 	StmtPtr functionDeclaration();
+	StmtPtr returnStatement();
 
 	// Expressions
 	ExprPtr expression();	

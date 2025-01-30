@@ -78,3 +78,7 @@ std::string FunctionDeclaration::ToString(int depth = 0) {
 
 	return output;
 }
+
+std::string ReturnStatement::ToString(int depth = 0) {
+	return std::string(" ", depth) + "Return statement, return expr = " + m_returnExpr->ToString();
+}
