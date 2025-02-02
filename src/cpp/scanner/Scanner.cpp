@@ -60,6 +60,8 @@ Token Scanner::ScanToken() {
                 return Token(TokenType::LEFT_PAREN, "(");
             case ')':
                 return Token(TokenType::RIGHT_PAREN, ")");
+            case ':':
+                return Token(TokenType::COLON, ":");
             case '\n':
                 m_line++;
                 m_offset = 0;
@@ -84,6 +86,11 @@ Token Scanner::ScanToken() {
     }
 
     return Token(TokenType::END);
+}
+
+
+int Scanner::GetLine() {
+	return m_line;
 }
 
 Token Scanner::scanNumber() {

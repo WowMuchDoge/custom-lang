@@ -59,6 +59,7 @@ enum class TokenType {
     RIGHT_BRACE,
     LEFT_PAREN,
     RIGHT_PAREN,
+    COLON,
     IDENTIFIER,
     UNKNOWN,
     END
@@ -149,6 +150,7 @@ namespace ScannerConstants {
         {TokenType::RIGHT_BRACE, "RIGHT_BRACE"},
         {TokenType::LEFT_PAREN, "LEFT_PAREN"},
         {TokenType::RIGHT_PAREN, "RIGHT_PAREN"},
+        {TokenType::COLON, "COLON"},
         {TokenType::UNKNOWN, "UNKNOWN"},
         {TokenType::END, "END"}
     };

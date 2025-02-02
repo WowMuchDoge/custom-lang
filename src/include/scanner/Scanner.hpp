@@ -10,6 +10,7 @@ public:
     Scanner(std::string source) : m_source{source}, m_line{1}, m_offset{0}, m_currentIndex{0}, m_error{-1, ""} {}
 
     Token ScanToken();
+	int GetLine();
 
 private:
     std::string m_source;

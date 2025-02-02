@@ -4,14 +4,18 @@
 #include <sstream>
 
 #include "Constants.hpp"
-#include "scanner/Token.hpp"
-#include "error/ScannerError.hpp"
-#include "scanner/Scanner.hpp"
+#include "compiler/Parser.hpp"
 
 std::string getExtension(std::string fileName) {
-    int pos = fileName.find(".");
+	// find_last_of() does not work for some reason
 
-    if (pos == std::string::npos) return "";
+	int pos;
+
+	for (pos = fileName.size() - 1; pos >= 0; pos--) {
+		if (fileName[pos] == '.') break;
+	}
+
+	if (pos == -1) return "";
 
     return fileName.substr(pos, fileName.size() - pos);
 }
@@ -38,25 +42,22 @@ std::string readFile(std::string filename) {
 
 int main(int argc, char **argv) {
     if (argc != 2) {
-        std::cout << "Usage: custom-lang <filename>" << std::endl;
-        return -1;
+		std::cout << "Usage: custom-lang <filename>" << std::endl;
+		return -1;
     }
 
-    std::string fileContent = readFile(argv[1]);
+	Parser parser(readFile(argv[1]));
+	std::vector<StmtPtr> statements;
 
-    if (fileContent == "") return -1;
+	try {
+		statements = parser.GetAst();
+	} catch (Error* e) {
+		e->Print();
+	}
 
-    Scanner scanner(fileContent);
+	for (auto stmt : statements) {
+		std::cout << stmt->ToString() << std::endl;
+	}
 
-    Token t(TokenType::UNKNOWN);
-
-    while (true) {
-        try {
-            t = scanner.ScanToken();
-        } catch (Error* e) {
-            e->Print();
-        }
-
-        if (t.GetType() == TokenType::END) break;
-    }
+	return 0;
 }
