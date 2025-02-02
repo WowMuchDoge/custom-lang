@@ -16,6 +16,9 @@ public:
 	int Resolve(std::string name);
 private:
 	int m_depth;
+
+	// So we know how much to reduce the slot number by
+	int m_beginSlot;
 	int m_currentSlot;
 
 	// String is the name and int is the slot index,

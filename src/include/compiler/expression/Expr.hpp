@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "compiler/expression/Value.hpp"
 #include "Constants.hpp"
@@ -10,7 +11,8 @@ enum class ExprType {
     UNARY,
     GROUPING,
     PRIMARY,
-	IDENTIFIER
+	IDENTIFIER,
+	CALL
 };
 
 class Expr {
@@ -82,4 +84,16 @@ private:
 	// We only need an ID since the value associated with the 
 	// identifier will only be deduced at runtime 
 	int m_id;
+};
+
+class Call : public Expr {
+public:
+	Call(ExprPtr callee, std::vector<ExprPtr> args) : m_callee{callee}, m_args{args} {}
+
+	ExprType GetExprType();
+
+	std::string ToString();
+private:
+	ExprPtr m_callee;
+	std::vector<ExprPtr> m_args;
 };

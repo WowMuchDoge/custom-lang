@@ -59,6 +59,7 @@ private:
 	ExprPtr term();
 	ExprPtr factor();
 	ExprPtr unary();
+	ExprPtr call();
 	ExprPtr primary();
 
 	Scanner m_scanner;

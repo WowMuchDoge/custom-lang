@@ -7,11 +7,13 @@ void ScopeStack::Push(std::string name) {
 
 void ScopeStack::NewScope() {
 	m_depth++;
+	m_beginSlot = m_currentSlot;
 	m_symbolSlots.push_back(std::unordered_map<std::string, int>());
 }
 
 void ScopeStack::EndScope() {
 	m_depth--;
+	m_currentSlot = m_beginSlot;
 	m_symbolSlots.pop_back();
 }
 

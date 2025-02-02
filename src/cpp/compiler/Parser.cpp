@@ -278,6 +278,11 @@ StmtPtr Parser::functionDeclaration() {
 
 	consume(TokenType::LEFT_PAREN, "Expected '(' after function name.");
 
+	// Run time is going to deal with differentiating between function types and typical
+	// types like `number` since I can't declare the function type explicitly as I get
+	// a circular dependency
+	m_scope.Push(functionName);
+	
 	std::vector<std::string> params;
 	std::vector<StmtPtr> functionBlock;
 
@@ -287,7 +292,10 @@ StmtPtr Parser::functionDeclaration() {
 		Token param = advance();
 
 		m_scope.Push(param.GetLiteral());
-		functionBlock.push_back(StmtPtr(new VariableDeclaration(ExprPtr(new Primary(Value()))))); // Empty value contructor gives `nil` value
+		// Needed so we don't get compiler errors. A function is declared before it is called so
+		// its parameters are not populated. These are the placeholder args that will be replaced
+		// at runtime by the actual arguments
+		functionBlock.push_back(StmtPtr(new VariableDeclaration(ExprPtr(new Primary(Value())))));
 		params.push_back(param.GetLiteral());
 
 		if (!match(TokenType::COMMA)) break;
@@ -344,7 +352,7 @@ ExprPtr Parser::logical() {
 
 	while ((op = match(2, TokenType::AND, TokenType::OR))
 			!= TokenType::UNKNOWN) {
-		
+
 		ExprPtr right = comparison();
 
 		left = ExprPtr(new Binary(op, left, right));
@@ -402,12 +410,32 @@ ExprPtr Parser::unary() {
 	TokenType op;
 
 	if ((op = match(2, TokenType::BANG, TokenType::MINUS)) != TokenType::UNKNOWN) {
-		ExprPtr right = primary();
+		ExprPtr right = call();
 
 		return ExprPtr(new Unary(op, right));
 	}
 
-	return primary();
+	return call();
+}
+
+ExprPtr Parser::call() {
+	ExprPtr left = primary();
+
+	while (match(TokenType::LEFT_PAREN)) {
+		std::vector<ExprPtr> args;
+	
+		while (true) {
+			args.push_back(expression());
+
+			if (!match(TokenType::COMMA)) break;
+		}
+
+		consume(TokenType::RIGHT_PAREN, "Expected ')' after params.");
+		
+		left = ExprPtr(new Call(left, args));
+	}
+
+	return left;
 }
 
 ExprPtr Parser::primary() {

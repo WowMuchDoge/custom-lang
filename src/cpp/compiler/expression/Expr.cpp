@@ -66,3 +66,19 @@ std::string Identifier::ToString() {
 ExprType Identifier::GetExprType() {
 	return ExprType::IDENTIFIER;
 }
+
+std::string Call::ToString() {
+	std::string output = "[Call, callee " + m_callee->ToString() + ", args = ";
+
+	for (ExprPtr arg : m_args) {
+		output += arg->ToString() + " ";
+	}
+
+	output += "]";
+
+	return output;
+}
+
+ExprType Call::GetExprType() {
+	return ExprType::CALL;
+}
