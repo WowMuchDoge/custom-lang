@@ -3,6 +3,8 @@
 #include <string>
 #include <variant>
 
+class test;
+
 // The int type is for IDing functions since the declarations are stored on an array
 typedef std::variant<double, bool, std::string, int> ValueVariant; 
 
@@ -40,6 +42,7 @@ public:
 	// Returns the type of the value
 	ValueType GetType();
 
+	std::string ToString();
 private:
     ValueType m_type;
     ValueVariant m_value;

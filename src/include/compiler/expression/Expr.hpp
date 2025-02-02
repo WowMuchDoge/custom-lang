@@ -6,6 +6,9 @@
 #include "compiler/expression/Value.hpp"
 #include "Constants.hpp"
 
+// Forward declaring the visitor to avoid circular dependencies
+class ExpressionVisitor;
+
 enum class ExprType {
     BINARY,
     UNARY,
@@ -21,6 +24,10 @@ public:
 
 	// For debugging purposes
 	virtual std::string ToString() = 0;
+
+	// For the visitor pattern, must use `std::shared_ptr<Expr>` since `ExprPtr`
+	// is defined after the class is declared
+	virtual Value accept(ExpressionVisitor& visitor) = 0;
 };
 
 typedef std::shared_ptr<Expr> ExprPtr;
@@ -32,6 +39,13 @@ public:
 	
 	ExprType GetExprType();
 	std::string ToString();
+
+	TokenType GetOp() { return m_op; }
+
+	ExprPtr GetLeft() { return m_left; }
+	ExprPtr GetRight() { return m_right; }
+
+	Value accept(ExpressionVisitor& visitor);
 
 private:
 	TokenType m_op;
@@ -46,6 +60,11 @@ public:
 	ExprType GetExprType();
 	std::string ToString();
 
+	TokenType GetOp() { return m_op; }
+	ExprPtr GetRight() { return m_right; }
+
+	Value accept(ExpressionVisitor& visitor);
+
 private:
 	TokenType m_op;
 	ExprPtr m_right;
@@ -58,6 +77,10 @@ public:
 	ExprType GetExprType();
 	std::string ToString();
 
+	Value accept(ExpressionVisitor& visitor);
+
+	ExprPtr GetExpr() { return m_expr; }
+
 private:
 	ExprPtr m_expr;
 };
@@ -69,6 +92,10 @@ public:
 	ExprType GetExprType();
 	std::string ToString();
 
+	Value GetValue() { return m_value; }
+
+	Value accept(ExpressionVisitor& visitor);
+
 private:
 	Value m_value;
 };
@@ -78,8 +105,12 @@ public:
 	Identifier(int id) : m_id{id} {}
 
 	ExprType GetExprType();
-
 	std::string ToString();
+
+	int GetId() { return m_id; }
+
+	Value accept(ExpressionVisitor& visitor);
+
 private:
 	// We only need an ID since the value associated with the 
 	// identifier will only be deduced at runtime 
@@ -91,8 +122,9 @@ public:
 	Call(ExprPtr callee, std::vector<ExprPtr> args) : m_callee{callee}, m_args{args} {}
 
 	ExprType GetExprType();
-
 	std::string ToString();
+
+	Value accept(ExpressionVisitor& visitor);
 private:
 	ExprPtr m_callee;
 	std::vector<ExprPtr> m_args;

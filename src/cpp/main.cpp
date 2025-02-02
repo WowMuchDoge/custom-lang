@@ -5,6 +5,7 @@
 
 #include "Constants.hpp"
 #include "compiler/Parser.hpp"
+#include "interpreter/ExpressionVisitor.hpp"
 
 std::string getExtension(std::string fileName) {
 	// find_last_of() does not work for some reason
@@ -41,23 +42,30 @@ std::string readFile(std::string filename) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
-		std::cout << "Usage: custom-lang <filename>" << std::endl;
-		return -1;
-    }
+ //    if (argc != 2) {
+	// 	std::cout << "Usage: custom-lang <filename>" << std::endl;
+	// 	return -1;
+ //    }
+	//
+	// Parser parser(readFile(argv[1]));
+	// std::vector<StmtPtr> statements;
+	//
+	// try {
+	// 	statements = parser.GetAst();
+	// } catch (Error* e) {
+	// 	e->Print();
+	// }
 
-	Parser parser(readFile(argv[1]));
-	std::vector<StmtPtr> statements;
+	SymbolTable t;
 
-	try {
-		statements = parser.GetAst();
-	} catch (Error* e) {
-		e->Print();
-	}
+	ExpressionVisitor v(t);
 
-	for (auto stmt : statements) {
-		std::cout << stmt->ToString() << std::endl;
-	}
+	ExprPtr p1(new Primary(10.0));
+	ExprPtr p2(new Primary(15.0));
+
+	Binary b(TokenType::PLUS, p1, p2);
+
+	std::cout << b.accept(v).GetNumber() << std::endl;
 
 	return 0;
 }

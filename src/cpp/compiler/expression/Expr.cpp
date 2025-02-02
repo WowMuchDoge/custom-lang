@@ -1,6 +1,7 @@
 #include "compiler/expression/Expr.hpp"
 
 #include "Constants.hpp"
+#include "interpreter/ExpressionVisitor.hpp"
 
 std::string GetTokenName(TokenType type) {
 	auto it = ScannerConstants::kTokenNames.find(type);
@@ -21,6 +22,10 @@ std::string Binary::ToString() {
 		+ m_right->ToString() + ", OP = " + GetTokenName(m_op) + "]";
 }
 
+Value Binary::accept(ExpressionVisitor& visitor) {
+	return visitor.visitBinaryExpr(*this);
+}
+
 ExprType Unary::GetExprType() {
 	return ExprType::UNARY;
 }
@@ -29,12 +34,20 @@ std::string Unary::ToString() {
 	return "[UNARY, RIGHT = " + m_right->ToString() + ", OP = " + GetTokenName(m_op) + "]";
 }
 
+Value Unary::accept(ExpressionVisitor& visitor) {
+	return visitor.visitUnaryExpr(*this);
+}
+
 ExprType Grouping::GetExprType() {
 	return ExprType::GROUPING;
 }
 
 std::string Grouping::ToString() {
 	return "[GROUPING, EXPR = " + m_expr->ToString() + "]";
+}
+
+Value Grouping::accept(ExpressionVisitor& visitor) {
+	return visitor.visitGroupingExpr(*this);
 }
 
 ExprType Primary::GetExprType() {
@@ -59,12 +72,20 @@ std::string Primary::ToString() {
 	}
 }
 
+Value Primary::accept(ExpressionVisitor& visitor) {
+	return visitor.visitPrimaryExpr(*this);
+}
+
 std::string Identifier::ToString() {
 	return "[Identifier, id = " + std::to_string(m_id) + "]";
 }
 
 ExprType Identifier::GetExprType() {
 	return ExprType::IDENTIFIER;
+}
+
+Value Identifier::accept(ExpressionVisitor& visitor) {
+	return visitor.visitIdentifierExpr(*this);
 }
 
 std::string Call::ToString() {
@@ -81,4 +102,8 @@ std::string Call::ToString() {
 
 ExprType Call::GetExprType() {
 	return ExprType::CALL;
+}
+
+Value Call::accept(ExpressionVisitor& visitor) {
+	return visitor.visitCallExpr(*this);
 }

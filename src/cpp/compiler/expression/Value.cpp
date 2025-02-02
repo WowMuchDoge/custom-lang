@@ -69,3 +69,22 @@ std::string Value::GetString() {
 int Value::GetFunctionId() {
 	return std::get<int>(m_value);
 }
+
+std::string Value::ToString() {
+	switch (m_type) {
+		case ValueType::NUMBER:
+			return std::to_string(std::get<double>(m_value));
+		case ValueType::STRING:
+			return std::get<std::string>(m_value);
+		case ValueType::BOOL:{
+			bool val = std::get<bool>(m_value);
+
+			return val ? "true" : "false";
+		}
+		case ValueType::NIL:
+			return "nil";
+		case ValueType::FUNCTION:
+		default:
+			return "";
+	}
+}

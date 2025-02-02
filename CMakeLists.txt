@@ -14,6 +14,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CPP_DIR src/cpp/)
 set(SCANNER_DIR src/cpp/scanner/)
 set(COMPILER_DIR src/cpp/compiler/)
+set(INTERPRETER_DIR src/cpp/interpreter)
 set(ERROR_DIR src/cpp/error)
 set(SCOPE_DIR src/cpp/compiler/scope)
 set(INCLUDE_DIR src/include)
@@ -27,6 +28,8 @@ set(CPP_SOURCES ${CPP_DIR}/main.cpp
 				${COMPILER_DIR}/Parser.cpp
 				${COMPILER_DIR}/ScopeStack.cpp
 				${COMPILER_DIR}/Stmt.cpp
+				${INTERPRETER_DIR}/ExpressionVisitor.cpp
+				${INTERPRETER_DIR}/SymbolTable.cpp
 				${ERROR_DIR}/ScannerError.cpp
 				${ERROR_DIR}/CompilerError.cpp
 )
