@@ -6,6 +6,7 @@
 #include "Constants.hpp"
 #include "compiler/Parser.hpp"
 #include "interpreter/ExpressionVisitor.hpp"
+#include "interpreter/StatementVisitor.hpp"
 
 std::string getExtension(std::string fileName) {
 	// find_last_of() does not work for some reason
@@ -42,30 +43,38 @@ std::string readFile(std::string filename) {
 }
 
 int main(int argc, char **argv) {
- //    if (argc != 2) {
-	// 	std::cout << "Usage: custom-lang <filename>" << std::endl;
-	// 	return -1;
- //    }
+    if (argc != 2) {
+		std::cout << "Usage: custom-lang <filename>" << std::endl;
+		return -1;
+    }
+
+	Parser parser(readFile(argv[1]));
+	std::vector<StmtPtr> statements;
+
+	try {
+		statements = parser.GetAst();
+	} catch (Error* e) {
+		e->Print();
+	}
+
+	SymbolTable st;
+	StatementVisitor sv{st};
+
+	for (auto statement : statements) {
+		statement->Accept(sv);
+	}
+
+	// SymbolTable t;	
 	//
-	// Parser parser(readFile(argv[1]));
-	// std::vector<StmtPtr> statements;
+	// StatementVisitor sv(t);
 	//
-	// try {
-	// 	statements = parser.GetAst();
-	// } catch (Error* e) {
-	// 	e->Print();
-	// }
-
-	SymbolTable t;
-
-	ExpressionVisitor v(t);
-
-	ExprPtr p1(new Primary(10.0));
-	ExprPtr p2(new Primary(15.0));
-
-	Binary b(TokenType::PLUS, p1, p2);
-
-	std::cout << b.accept(v).GetNumber() << std::endl;
-
-	return 0;
+	// Value n1(1.0);
+	// Value n2(5.0);
+	//
+	// ExprPtr p1(new Primary(n1));
+	// ExprPtr p2(new Primary(n2));
+	//
+	// ExprPtr add(new Binary(TokenType::PLUS, p1, p2));
+	//
+	// StmtPtr varDec(new VariableDeclaration(add));
 }

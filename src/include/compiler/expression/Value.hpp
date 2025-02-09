@@ -3,10 +3,12 @@
 #include <string>
 #include <variant>
 
-class test;
+struct FunctionType {
+	std::string name;
+	int id;
+};
 
-// The int type is for IDing functions since the declarations are stored on an array
-typedef std::variant<double, bool, std::string, int> ValueVariant; 
+typedef std::variant<double, bool, std::string, FunctionType> ValueVariant; 
 
 enum class ValueType {
     NUMBER,
@@ -22,12 +24,12 @@ public:
 	Value(double val);
 	Value(bool b);
 	Value(std::string str);
-	Value(int id);
+	Value(std::string name, int id);
 
 	void SetNumber(double val);
 	void SetBoolean(bool b);
 	void SetString(std::string str);
-	void SetFunction(int id);
+	void SetFunction(std::string name, int id);
 	void SetNil();
 
 	// If type is number will return number, otherwise will throw error

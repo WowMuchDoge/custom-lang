@@ -19,9 +19,9 @@ Value::Value(std::string str) {
 	m_value = str;
 }
 
-Value::Value(int id) {
+Value::Value(std::string name, int id) {
 	m_type = ValueType::FUNCTION;
-	m_value = id;
+	m_value = (FunctionType){name, id};
 }
 
 void Value::SetNumber(double val) {
@@ -41,9 +41,9 @@ void Value::SetString(std::string str) {
 	m_value = str;
 }
 
-void Value::SetFunction(int id) {
+void Value::SetFunction(std::string name, int id) {
 	m_type = ValueType::FUNCTION;
-	m_value = id;
+	m_value = (FunctionType){name, id};
 }
 
 void Value::SetNil() {
@@ -67,7 +67,7 @@ std::string Value::GetString() {
 }
 
 int Value::GetFunctionId() {
-	return std::get<int>(m_value);
+	return std::get<FunctionType>(m_value).id;
 }
 
 std::string Value::ToString() {
@@ -84,6 +84,7 @@ std::string Value::ToString() {
 		case ValueType::NIL:
 			return "nil";
 		case ValueType::FUNCTION:
+			return "<fn " + std::get<FunctionType>(m_value).name + ", id " + std::to_string(std::get<FunctionType>(m_value).id) + ">";
 		default:
 			return "";
 	}

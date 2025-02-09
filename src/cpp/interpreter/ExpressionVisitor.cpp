@@ -67,11 +67,11 @@ Value ExpressionVisitor::visitBinaryExpr(Binary expr) {
 				throw;
 			}
 
-			int leftNum = left.GetNumber();
-			int rightNum = right.GetNumber();
+			double leftNum = left.GetNumber();
+			double rightNum = right.GetNumber();
 			
 			if (isInteger(leftNum) && isInteger(rightNum)) {
-				return (int)leftNum % (int)rightNum;
+				return (double)((int)leftNum % (int)rightNum);
 			}
 			
 			// Means one or both of the operands was not an integer

@@ -5,11 +5,16 @@
 
 #include "compiler/expression/Expr.hpp"
 
+class StatementVisitor;
+
 class Stmt {
 public:
 	// For debugging purposes, depth is recursive depth 
 	// used to format block statments nicely
 	virtual std::string ToString(int depth = 0) = 0;
+
+	// The function that will accept the statement visitor
+	virtual void Accept(StatementVisitor& visitor) = 0;
 };
 
 typedef std::shared_ptr<Stmt> StmtPtr;
@@ -18,12 +23,17 @@ class VariableDeclaration : public Stmt {
 public:
 	VariableDeclaration(ExprPtr expr) : m_expr{expr} {}
 
+	ExprPtr GetExpr() { return m_expr; }
+	std::string GetName();
+
 	std::string ToString(int depth);
 private:
 	// Since language is statically scoped, the initial
 	// expression will only be evaluated when the variable
 	// is declared (if there is any)
 	ExprPtr m_expr;
+
+	void Accept(StatementVisitor& visitor);
 };
 
 class PrintStatement : public Stmt {
@@ -33,6 +43,9 @@ public:
 
 	std::string ToString(int depth);
 
+	ExprPtr GetExpression() { return m_expr; }
+
+	void Accept(StatementVisitor& visitor);
 private:
 	ExprPtr m_expr;
 };
@@ -41,6 +54,10 @@ class BlockStatement : public Stmt {
 public:	
 	BlockStatement(std::vector<StmtPtr> statements) : m_statements{statements} {}
 	
+	void Accept(StatementVisitor& visitor);
+
+	std::vector<StmtPtr> GetStatements() { return m_statements; }
+
 	std::string ToString(int depth);
 private:
 	std::vector<StmtPtr> m_statements;
@@ -58,6 +75,8 @@ public:
 	ExprPtr GetExpr() { return m_expr.value(); }
 
 	StmtPtr GetStmt() { return m_statement; }
+
+	void Accept(StatementVisitor& visitor);
 private:
 
 	// There would be no expression in an `else` control path
@@ -70,6 +89,10 @@ public:
 	IfStatement(std::vector<IfObject> ifChain) : m_ifChain{ifChain} {}
 
 	std::string ToString(int depth);
+
+	std::vector<IfObject> GetIfs() { return m_ifChain; }
+
+	void Accept(StatementVisitor& visitor);
 private:
 	std::vector<IfObject> m_ifChain;
 };
@@ -79,6 +102,11 @@ public:
 	WhileStatement(ExprPtr expr, StmtPtr stmt) : m_expr{expr}, m_stmt{stmt} {}
 
 	std::string ToString(int depth);
+
+	ExprPtr GetExpr() { return m_expr; }
+	StmtPtr GetStmt() { return m_stmt; }
+
+	void Accept(StatementVisitor& visitor);
 private:
 	ExprPtr m_expr;
 	StmtPtr m_stmt;
@@ -91,6 +119,9 @@ public:
 	std::string ToString(int depth);
 
 	ExprPtr GetExpr() { return m_expr; }
+
+	void Accept(StatementVisitor& visitor);
+
 private:
 	ExprPtr m_expr;
 };
@@ -101,6 +132,8 @@ public:
 		: m_params{params}, m_block{block} {}
 
 	std::string ToString(int detph);
+
+	void Accept(StatementVisitor& visitor);
 private:
 	std::vector<std::string> m_params;
 	BlockStatement m_block;
@@ -111,6 +144,8 @@ public:
 	ReturnStatement(ExprPtr expr) : m_returnExpr{expr} {}
 
 	std::string ToString(int depth);
+
+	void Accept(StatementVisitor& visitor);
 private:
 	ExprPtr m_returnExpr;
 };

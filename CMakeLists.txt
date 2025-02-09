@@ -30,6 +30,7 @@ set(CPP_SOURCES ${CPP_DIR}/main.cpp
 				${COMPILER_DIR}/Stmt.cpp
 				${INTERPRETER_DIR}/ExpressionVisitor.cpp
 				${INTERPRETER_DIR}/SymbolTable.cpp
+				${INTERPRETER_DIR}/StatementVisitor.cpp
 				${ERROR_DIR}/ScannerError.cpp
 				${ERROR_DIR}/CompilerError.cpp
 )
