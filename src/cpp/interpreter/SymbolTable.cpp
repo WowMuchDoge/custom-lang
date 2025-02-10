@@ -5,7 +5,7 @@ void SymbolTable::NewScope() {
 }
 
 void SymbolTable::EndScope() {
-	while (getTableHeadIndex() != m_scopeBorders.back())
+	while (m_table.size() - 1 < m_scopeBorders.back())
 		m_table.pop_back();
 }
 

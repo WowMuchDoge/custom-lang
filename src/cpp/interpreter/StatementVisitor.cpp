@@ -15,7 +15,7 @@ void StatementVisitor::VisitBlockStatement(BlockStatement stmt) {
 	for (StmtPtr statement : stmt.GetStatements()) {
 		statement->Accept(*this);
 	}
-	m_table.NewScope();
+	m_table.EndScope();
 }
 
 void StatementVisitor::VisitIfStatement(IfStatement stmt) {

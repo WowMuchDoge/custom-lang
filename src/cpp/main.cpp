@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
 	StatementVisitor sv{st};
 
 	for (auto statement : statements) {
+		std::cout << statement->ToString() << std::endl;
 		statement->Accept(sv);
 	}
 

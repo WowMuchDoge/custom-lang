@@ -1,6 +1,8 @@
 #include "interpreter/ExpressionVisitor.hpp"
 
 #include <limits>
+#include <cmath>
+#include <iostream>
 
 Value ExpressionVisitor::visitBinaryExpr(Binary expr) {
 	Value left = expr.GetLeft()->accept(*this);
@@ -197,5 +199,5 @@ bool ExpressionVisitor::isInteger(double n) {
 	double comparison = (double)((int)n);
 
 	// Goofy ahh double comparison
-	return fabs(n - comparison) < std::numeric_limits<double>::epsilon();
+	return std::fabs(n - comparison) < std::numeric_limits<double>::epsilon();
 }
