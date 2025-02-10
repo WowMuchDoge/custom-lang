@@ -77,7 +77,19 @@ Value ExpressionVisitor::visitBinaryExpr(Binary expr) {
 			// Means one or both of the operands was not an integer
 			throw;
 		}
-		case TokenType::EQUAL: // Deal with this later since it requires environment info
+		case TokenType::EQUAL: {
+			// Cannot assign to a non-identifier type, you can't say
+			// 1 = 2 or true = false
+			if (expr.GetLeft()->GetExprType() != ExprType::IDENTIFIER) throw;
+
+			Identifier *variable = (Identifier*)expr.GetLeft().get();
+
+			// Line of code is a little cursed, but `Get()` returns a reference
+			// so we can assign it however we want
+			m_symbols.Get(variable->GetId()) = right;
+
+			return right;
+		}
 		case TokenType::EQUAL_EQUAL: {
 			switch (type) {
 				case ValueType::NUMBER:
@@ -122,11 +134,23 @@ Value ExpressionVisitor::visitBinaryExpr(Binary expr) {
 		case TokenType::LESS:
 			if (type != ValueType::NUMBER) throw; 
 			
-			return left.GetNumber() >= right.GetNumber();
+			return left.GetNumber() < right.GetNumber();
 		case TokenType::LESS_EQUAL:
 			if (type != ValueType::NUMBER) throw; 
 			
-			return left.GetNumber() >= right.GetNumber();
+			return left.GetNumber() <= right.GetNumber();
+		case TokenType::AND: {
+			// Cannot perform `and` operation on non-boolean values
+			if (left.GetType() != ValueType::BOOL || right.GetType() != ValueType::BOOL) throw;
+
+			return left.GetBoolean() && left.GetBoolean();
+		}
+		case TokenType::OR: {
+			// Cannot perform `and` operation on non-boolean values
+			if (left.GetType() != ValueType::BOOL || right.GetType() != ValueType::BOOL) throw;
+
+			return left.GetBoolean() || left.GetBoolean();
+		}
 		default:
 			// Trying to do a binary operation with an invalid op
 			throw;

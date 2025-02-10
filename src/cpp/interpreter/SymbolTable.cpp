@@ -17,7 +17,7 @@ void SymbolTable::Push(Value v) {
 	m_table.push_back(v);
 }
 
-Value SymbolTable::Get(int index) {
+Value& SymbolTable::Get(int index) {
 	return m_table[index];
 }
 

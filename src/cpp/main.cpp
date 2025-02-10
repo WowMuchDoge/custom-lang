@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <chrono>
 
 #include "Constants.hpp"
 #include "compiler/Parser.hpp"
@@ -43,7 +44,10 @@ std::string readFile(std::string filename) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 2) {
+
+	auto start = std::chrono::high_resolution_clock::now();
+    
+	if (argc != 2) {
 		std::cout << "Usage: custom-lang <filename>" << std::endl;
 		return -1;
     }
@@ -63,6 +67,12 @@ int main(int argc, char **argv) {
 	for (auto statement : statements) {
 		statement->Accept(sv);
 	}
+
+	auto end = std::chrono::high_resolution_clock::now();
+
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+
+	std::cout << "Completed in " << duration.count() << "ms." << std::endl;
 
 	// SymbolTable t;	
 	//

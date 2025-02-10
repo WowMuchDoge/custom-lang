@@ -254,7 +254,7 @@ StmtPtr Parser::forStatement() {
 
 	block.insert(block.begin(), stmt);
 	
-	StmtPtr whileStmt(new WhileStatement(condition, stmt));
+	StmtPtr whileStmt(new WhileStatement(condition, StmtPtr(new BlockStatement(block))));
 
 	outer.push_back(whileStmt);
 

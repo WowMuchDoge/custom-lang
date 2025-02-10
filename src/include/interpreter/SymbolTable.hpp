@@ -14,7 +14,7 @@ public:
 	void Push(); // Pushes `nil` to the symbol table
 	void Push(Value v);
 
-	Value Get(int index);
+	Value& Get(int index);
 private:
 
 	// The borders of the scope so when we leave a scope we know what position to delete to
