@@ -6,6 +6,8 @@
 
 class SymbolTable {
 public:
+	SymbolTable() : m_scopeBorders({0}) {}
+
 	void NewScope();
 	void EndScope();
 

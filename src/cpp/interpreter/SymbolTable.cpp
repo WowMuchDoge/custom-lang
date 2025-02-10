@@ -1,12 +1,15 @@
 #include "interpreter/SymbolTable.hpp"
 
+#include <iostream>
+
 void SymbolTable::NewScope() {
 	m_scopeBorders.push_back(getTableHeadIndex());
 }
 
 void SymbolTable::EndScope() {
-	while (m_table.size() - 1 < m_scopeBorders.back())
+	while (getTableHeadIndex() != m_scopeBorders.back()) {
 		m_table.pop_back();
+	}
 }
 
 void SymbolTable::Push() {
