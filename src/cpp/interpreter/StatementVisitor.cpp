@@ -7,7 +7,7 @@ void StatementVisitor::VisitVariableDeclaration(VariableDeclaration stmt) {
 }
 
 void StatementVisitor::VisitPrintStatement(PrintStatement stmt) {
-	std::cout << evaluate(stmt.GetExpression()).ToString() << std::endl;
+	std::cout << evaluate(stmt.GetExpression())->ToString() << std::endl;
 }
 
 void StatementVisitor::VisitBlockStatement(BlockStatement stmt) {
@@ -23,7 +23,7 @@ void StatementVisitor::VisitIfStatement(IfStatement stmt) {
 		if (obj.IsElse()) {
 			obj.GetStmt()->Accept(*this);
 		} else {
-			Value condition = evaluate(obj.GetExpr());
+			Value condition = evaluateValue(obj.GetExpr());
 
 			if (condition.GetType() != ValueType::BOOL) {
 				// TODO add some error handling
@@ -39,14 +39,14 @@ void StatementVisitor::VisitIfStatement(IfStatement stmt) {
 }
 
 void StatementVisitor::VisitWhileStatement(WhileStatement stmt) {
-	Value condition = evaluate(stmt.GetExpr());
+	Value condition = evaluateValue(stmt.GetExpr());
 
 	if (condition.GetType() != ValueType::BOOL) {
 		// Condition has to be a boolean
 		throw;
 	}
 
-	while (evaluate(stmt.GetExpr()).GetBoolean()) {
+	while (evaluateValue(stmt.GetExpr()).GetBoolean()) {
 		stmt.GetStmt()->Accept(*this);
 	}
 }
@@ -63,6 +63,18 @@ void StatementVisitor::VisitReturnStatement(ReturnStatement stmt) {
 
 }
 
-Value StatementVisitor::evaluate(ExprPtr expr) {
+TypePtr StatementVisitor::evaluate(ExprPtr expr) {
 	return expr->accept(m_exprVisitor);
+}
+
+Value StatementVisitor::evaluateValue(ExprPtr expr) {
+	TypePtr ptr = evaluate(expr);
+
+	if (ptr->GetType() == ValueType::FUNCTION) throw;
+
+	return ptr->AsValue();
+}
+
+void StatementVisitor::ChangeScope(SymbolTable& table) {
+	m_table = table;
 }

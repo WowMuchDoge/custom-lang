@@ -16,9 +16,11 @@ public:
 	void VisitExpressionStatement(ExpressionStatement stmt);
 	void VisitFunctionDeclaration(FunctionDeclaration stmt);
 	void VisitReturnStatement(ReturnStatement stmt);
-	
+
+	void ChangeScope(SymbolTable& m_table);
 private:
-	Value evaluate(ExprPtr expr);
+	TypePtr evaluate(ExprPtr expr);
+	Value evaluateValue(ExprPtr expr);
 
 	SymbolTable& m_table;
 	ExpressionVisitor m_exprVisitor;

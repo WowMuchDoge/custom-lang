@@ -2,6 +2,7 @@
 
 #include <string>
 #include <variant>
+#include <memory>
 
 struct FunctionType {
 	std::string name;
@@ -18,7 +19,22 @@ enum class ValueType {
     NIL
 };
 
-class Value {
+
+class Value;
+
+// We use this so values and functions can be treated the same
+// as first class citizens as it will inherit from this class
+class IType {
+public:
+	virtual std::string ToString() = 0;
+	virtual ValueType GetType() = 0;
+
+	virtual Value& AsValue() = 0;
+};
+
+typedef std::shared_ptr<IType> TypePtr;
+
+class Value : public IType {
 public:
     Value();
 	Value(double val);
@@ -45,6 +61,8 @@ public:
 	ValueType GetType();
 
 	std::string ToString();
+
+	Value& AsValue() { return *this; }
 private:
     ValueType m_type;
     ValueVariant m_value;

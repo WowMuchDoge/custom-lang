@@ -12,14 +12,14 @@ public:
 	void EndScope();
 
 	void Push(); // Pushes `nil` to the symbol table
-	void Push(Value v);
+	void Push(TypePtr val);
 
-	Value& Get(int index);
+	TypePtr Get(int index);
 private:
 
 	// The borders of the scope so when we leave a scope we know what position to delete to
 	std::vector<int> m_scopeBorders;
-	std::vector<Value> m_table;
+	std::vector<TypePtr> m_table;
 
 	int getTableHeadIndex();
 };

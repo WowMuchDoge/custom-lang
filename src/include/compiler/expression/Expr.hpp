@@ -27,7 +27,7 @@ public:
 
 	// For the visitor pattern, must use `std::shared_ptr<Expr>` since `ExprPtr`
 	// is defined after the class is declared
-	virtual Value accept(ExpressionVisitor& visitor) = 0;
+	virtual TypePtr accept(ExpressionVisitor& visitor) = 0;
 };
 
 typedef std::shared_ptr<Expr> ExprPtr;
@@ -45,7 +45,7 @@ public:
 	ExprPtr GetLeft() { return m_left; }
 	ExprPtr GetRight() { return m_right; }
 
-	Value accept(ExpressionVisitor& visitor);
+	TypePtr accept(ExpressionVisitor& visitor);
 
 private:
 	TokenType m_op;
@@ -63,7 +63,7 @@ public:
 	TokenType GetOp() { return m_op; }
 	ExprPtr GetRight() { return m_right; }
 
-	Value accept(ExpressionVisitor& visitor);
+	TypePtr accept(ExpressionVisitor& visitor);
 
 private:
 	TokenType m_op;
@@ -77,7 +77,7 @@ public:
 	ExprType GetExprType();
 	std::string ToString();
 
-	Value accept(ExpressionVisitor& visitor);
+	TypePtr accept(ExpressionVisitor& visitor);
 
 	ExprPtr GetExpr() { return m_expr; }
 
@@ -87,17 +87,17 @@ private:
 
 class Primary : public Expr {
 public:
-	Primary(Value val) : m_value{val} {}
+	Primary(TypePtr val) : m_value{val} {}
 
 	ExprType GetExprType();
 	std::string ToString();
 
-	Value GetValue() { return m_value; }
+	TypePtr GetValue() { return m_value; }
 
-	Value accept(ExpressionVisitor& visitor);
+	TypePtr accept(ExpressionVisitor& visitor);
 
 private:
-	Value m_value;
+	TypePtr m_value;
 };
 
 class Identifier : public Expr {
@@ -109,7 +109,7 @@ public:
 
 	int GetId() { return m_id; }
 
-	Value accept(ExpressionVisitor& visitor);
+	TypePtr accept(ExpressionVisitor& visitor);
 
 private:
 	// We only need an ID since the value associated with the 
@@ -124,7 +124,9 @@ public:
 	ExprType GetExprType();
 	std::string ToString();
 
-	Value accept(ExpressionVisitor& visitor);
+	ExprPtr GetCallee() { return m_callee; }
+
+	TypePtr accept(ExpressionVisitor& visitor);
 private:
 	ExprPtr m_callee;
 	std::vector<ExprPtr> m_args;

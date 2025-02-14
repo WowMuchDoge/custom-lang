@@ -13,14 +13,14 @@ void SymbolTable::EndScope() {
 }
 
 void SymbolTable::Push() {
-	m_table.push_back(Value());
+	m_table.push_back(TypePtr(new Value()));
 }
 
-void SymbolTable::Push(Value v) {
-	m_table.push_back(v);
+void SymbolTable::Push(TypePtr val) {
+	m_table.push_back(val);
 }
 
-Value& SymbolTable::Get(int index) {
+TypePtr SymbolTable::Get(int index) {
 	return m_table[index];
 }
 

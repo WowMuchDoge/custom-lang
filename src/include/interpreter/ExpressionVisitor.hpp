@@ -7,12 +7,12 @@ class ExpressionVisitor {
 public:
 	ExpressionVisitor(SymbolTable& symbols) : m_symbols{symbols} {}	
 
-	Value visitBinaryExpr(Binary expr);
-	Value visitUnaryExpr(Unary expr);
-	Value visitGroupingExpr(Grouping expr);
-	Value visitPrimaryExpr(Primary expr);
-	Value visitIdentifierExpr(Identifier expr);
-	Value visitCallExpr(Call expr);
+	TypePtr visitBinaryExpr(Binary expr);
+	TypePtr visitUnaryExpr(Unary expr);
+	TypePtr visitGroupingExpr(Grouping expr);
+	TypePtr visitPrimaryExpr(Primary expr);
+	TypePtr visitIdentifierExpr(Identifier expr);
+	TypePtr visitCallExpr(Call expr);
 
 private:
 	static bool isInteger(double n);

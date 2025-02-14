@@ -124,7 +124,7 @@ StmtPtr Parser::variableDeclaration(bool requireSemicolon) {
 
 	m_scope.Push(var.GetLiteral());
 
-	ExprPtr expr(new Primary(Value()));
+	ExprPtr expr(new Primary(TypePtr(new Value())));
 
 	if (peek().GetType() == TokenType::EQUAL) {
 		advance();
@@ -295,7 +295,7 @@ StmtPtr Parser::functionDeclaration() {
 		// Needed so we don't get compiler errors. A function is declared before it is called so
 		// its parameters are not populated. These are the placeholder args that will be replaced
 		// at runtime by the actual arguments
-		functionBlock.push_back(StmtPtr(new VariableDeclaration(ExprPtr(new Primary(Value())))));
+		functionBlock.push_back(StmtPtr(new VariableDeclaration(ExprPtr(new Primary(TypePtr(new Value()))))));
 		params.push_back(param.GetLiteral());
 
 		if (!match(TokenType::COMMA)) break;
@@ -317,7 +317,7 @@ StmtPtr Parser::functionDeclaration() {
 
 StmtPtr Parser::returnStatement() {
 
-	ExprPtr expr(new Primary(Value()));
+	ExprPtr expr(new Primary(TypePtr(new Value())));
 
 	if (peek().GetType() != TokenType::SEMICOLON)
 		expr = expression();
@@ -439,8 +439,8 @@ ExprPtr Parser::call() {
 }
 
 ExprPtr Parser::primary() {
-	if (match(TokenType::TRUE)) return ExprPtr(new Primary(true));
-	if (match(TokenType::FALSE)) return ExprPtr(new Primary(false));
+	if (match(TokenType::TRUE)) return ExprPtr(new Primary(TypePtr(new Value(true))));
+	if (match(TokenType::FALSE)) return ExprPtr(new Primary(TypePtr(new Value(false))));
 
 	// Variable resolution
 	if (peek().GetType() == TokenType::IDENTIFIER) {
@@ -455,7 +455,7 @@ ExprPtr Parser::primary() {
 	}
 
 	// Value constructor with no args constructs a nil value
-	if (match(TokenType::NIL)) return ExprPtr(new Primary(Value()));
+	if (match(TokenType::NIL)) return ExprPtr(new Primary(TypePtr(new Value())));
 
 	if (match(TokenType::LEFT_PAREN)) {
 		ExprPtr expr = expression();
@@ -467,15 +467,15 @@ ExprPtr Parser::primary() {
 
 	if (peek().GetType() == TokenType::NUMBER) {
 		Token number = advance();
-	
-		// Implicit constructor, constructor to Value is being called
-		// with a double
-		return ExprPtr(new Primary(number.GetValue()));
+
+		std::cout << number.GetValue() << " Is a number\n";
+
+		return ExprPtr(new Primary(TypePtr(new Value(number.GetValue()))));
 	}
 
 	if (peek().GetType() == TokenType::STRING) {
 		Token str = advance();
-		return ExprPtr(new Primary(str.GetLiteral()));
+		return ExprPtr(new Primary(TypePtr(new Value(str.GetLiteral()))));
 	}
 
 	if (peek().GetType() == TokenType::IDENTIFIER) {
