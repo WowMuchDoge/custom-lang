@@ -13,7 +13,7 @@ void SymbolTable::EndScope() {
 }
 
 void SymbolTable::Push() {
-	m_table.push_back(TypePtr(new Value()));
+	m_table.push_back(Value().ToPtr());
 }
 
 void SymbolTable::Push(TypePtr val) {

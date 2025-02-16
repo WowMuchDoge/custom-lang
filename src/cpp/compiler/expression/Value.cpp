@@ -19,11 +19,6 @@ Value::Value(std::string str) {
 	m_value = str;
 }
 
-Value::Value(std::string name, int id) {
-	m_type = ValueType::FUNCTION;
-	m_value = (FunctionType){name, id};
-}
-
 void Value::SetNumber(double val) {
 	m_type = ValueType::NUMBER;
 	m_value = val;
@@ -39,11 +34,6 @@ void Value::SetBoolean(bool b) {
 void Value::SetString(std::string str) {
 	m_type = ValueType::STRING;
 	m_value = str;
-}
-
-void Value::SetFunction(std::string name, int id) {
-	m_type = ValueType::FUNCTION;
-	m_value = (FunctionType){name, id};
 }
 
 void Value::SetNil() {
@@ -88,4 +78,8 @@ std::string Value::ToString() {
 		default:
 			return "";
 	}
+}
+
+TypePtr Value::ToPtr() {
+	return TypePtr(new Value(*this));
 }

@@ -1,13 +1,14 @@
 #pragma once
 
-#include "interpreter/ExpressionVisitor.hpp"
+#include "interpreter/StatementVisitor.hpp"
+#include <utility>
 
 class Interpreter {
 public:
-	Interpreter() : m_expressionVisitor{m_table} {}
+	Interpreter();
 private:
 	ExpressionVisitor m_expressionVisitor;
-	SymbolTable m_table;
+	StatementVisitor m_statementVisitor;
 
-	Value evaluate(ExprPtr expr);
+	std::pair<StmtPtr, SymbolTable> m_callStack;
 };

@@ -21,6 +21,10 @@ enum class ValueType {
 
 
 class Value;
+class Callable;
+class IType;
+
+typedef std::shared_ptr<IType> TypePtr;
 
 // We use this so values and functions can be treated the same
 // as first class citizens as it will inherit from this class
@@ -29,10 +33,21 @@ public:
 	virtual std::string ToString() = 0;
 	virtual ValueType GetType() = 0;
 
-	virtual Value& AsValue() = 0;
-};
+	// I know this is bad OOP, but I really want to avoid a cast
+	// since I used to do it and it broke a bunch of stuff. 
+	// My sincere apologies. Defaults to throw so each class
+	// that implements the interface only has to implement the
+	// type it is
+	virtual Value& AsValue() {
+		throw;
+	}
 
-typedef std::shared_ptr<IType> TypePtr;
+	virtual Callable& AsCallable() {
+		throw;
+	}
+
+	virtual TypePtr ToPtr() = 0;
+};
 
 class Value : public IType {
 public:
@@ -40,12 +55,10 @@ public:
 	Value(double val);
 	Value(bool b);
 	Value(std::string str);
-	Value(std::string name, int id);
 
 	void SetNumber(double val);
 	void SetBoolean(bool b);
 	void SetString(std::string str);
-	void SetFunction(std::string name, int id);
 	void SetNil();
 
 	// If type is number will return number, otherwise will throw error
@@ -63,6 +76,8 @@ public:
 	std::string ToString();
 
 	Value& AsValue() { return *this; }
+
+	TypePtr ToPtr();
 private:
     ValueType m_type;
     ValueVariant m_value;

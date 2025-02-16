@@ -82,7 +82,7 @@ void Parser::skipStatement() {
 	while (!atEnd() && advance().GetType() != TokenType::SEMICOLON);
 }
 
-std::vector<StmtPtr> Parser::GetAst() {
+StmtPtr Parser::GetAst() {
 	std::vector<StmtPtr> program;
 	
 	while (!atEnd()) {
@@ -94,7 +94,7 @@ std::vector<StmtPtr> Parser::GetAst() {
 		}
 	}
 
-	return program;
+	return BlockStatement(program).ToPtr();
 }
 
 StmtPtr Parser::statement() {
@@ -124,7 +124,7 @@ StmtPtr Parser::variableDeclaration(bool requireSemicolon) {
 
 	m_scope.Push(var.GetLiteral());
 
-	ExprPtr expr(new Primary(TypePtr(new Value())));
+	ExprPtr expr = Primary(Value().ToPtr()).ToPtr();
 
 	if (peek().GetType() == TokenType::EQUAL) {
 		advance();
@@ -134,7 +134,7 @@ StmtPtr Parser::variableDeclaration(bool requireSemicolon) {
 
 	if (requireSemicolon) consumeSemicolon();
 
-	return StmtPtr(new VariableDeclaration(expr));
+	return VariableDeclaration(expr).ToPtr();
 }
 
 StmtPtr Parser::printStatement() {
@@ -146,7 +146,7 @@ StmtPtr Parser::printStatement() {
 
 	consumeSemicolon();
 
-	return StmtPtr(new PrintStatement(expr));
+	return PrintStatement(expr).ToPtr();
 }
 
 StmtPtr Parser::blockStatement() {
@@ -173,7 +173,7 @@ StmtPtr Parser::blockStatement() {
 	
 	consume(TokenType::RIGHT_BRACE, "Expected '}' after block."); 
 
-	return StmtPtr(new BlockStatement(statements));
+	return BlockStatement(statements).ToPtr();
 }
 
 StmtPtr Parser::ifStatement() {
@@ -201,7 +201,7 @@ StmtPtr Parser::ifStatement() {
 		ifs.push_back(IfObject(std::nullopt, statement()));
 	}
 
-	return StmtPtr(new IfStatement(ifs));
+	return IfStatement(ifs).ToPtr();
 }
 
 StmtPtr Parser::whileStatement() {
@@ -213,7 +213,7 @@ StmtPtr Parser::whileStatement() {
 
 	StmtPtr stmt = statement();
 
-	return StmtPtr(new WhileStatement(expr, stmt));
+	return WhileStatement(expr, stmt).ToPtr();
 }
 
 
@@ -254,7 +254,7 @@ StmtPtr Parser::forStatement() {
 
 	block.insert(block.begin(), stmt);
 	
-	StmtPtr whileStmt(new WhileStatement(condition, StmtPtr(new BlockStatement(block))));
+	StmtPtr whileStmt = WhileStatement(condition, BlockStatement(block).ToPtr()).ToPtr();
 
 	outer.push_back(whileStmt);
 
@@ -263,14 +263,14 @@ StmtPtr Parser::forStatement() {
 	// `for (var i = 0; i < 10; i = i + 1) print(i);` would
 	// be `{ var i = 0; while (i < 10) { print(i); i = i + 1; } }
 
-	return StmtPtr(new BlockStatement(outer));
+	return BlockStatement(outer).ToPtr();
 }
 
 StmtPtr Parser::expressionStatement(bool requireSemicolon) {
 	ExprPtr expr = expression();
 	if (requireSemicolon) consumeSemicolon();
 
-	return StmtPtr(new ExpressionStatement(expr));
+	return ExpressionStatement(expr).ToPtr();
 }
 
 StmtPtr Parser::functionDeclaration() {
@@ -295,7 +295,7 @@ StmtPtr Parser::functionDeclaration() {
 		// Needed so we don't get compiler errors. A function is declared before it is called so
 		// its parameters are not populated. These are the placeholder args that will be replaced
 		// at runtime by the actual arguments
-		functionBlock.push_back(StmtPtr(new VariableDeclaration(ExprPtr(new Primary(TypePtr(new Value()))))));
+		functionBlock.push_back(VariableDeclaration(Primary(Value().ToPtr()).ToPtr()).ToPtr());
 		params.push_back(param.GetLiteral());
 
 		if (!match(TokenType::COMMA)) break;
@@ -312,19 +312,19 @@ StmtPtr Parser::functionDeclaration() {
 
 	BlockStatement block(functionBlock);
 
-	return StmtPtr(new FunctionDeclaration(params, block));
+	return FunctionDeclaration(params, block).ToPtr();
 }
 
 StmtPtr Parser::returnStatement() {
 
-	ExprPtr expr(new Primary(TypePtr(new Value())));
+	ExprPtr expr = Primary(Value().ToPtr()).ToPtr();
 
 	if (peek().GetType() != TokenType::SEMICOLON)
 		expr = expression();
 	
 	consumeSemicolon();
 
-	return StmtPtr(new ReturnStatement(expr));
+	return ReturnStatement(expr).ToPtr();
 }
 
 ExprPtr Parser::expression() {
@@ -340,7 +340,7 @@ ExprPtr Parser::assignment() {
 	// make this recursive call
 	if (match(TokenType::EQUAL)) {
 		ExprPtr right = assignment();
-		return ExprPtr(new Binary(TokenType::EQUAL, left, right));
+		return Binary(TokenType::EQUAL, left, right).ToPtr();
 	}
 
 	return left;
@@ -355,7 +355,7 @@ ExprPtr Parser::logical() {
 
 		ExprPtr right = comparison();
 
-		left = ExprPtr(new Binary(op, left, right));
+		left = Binary(op, left, right).ToPtr();
 	}
 
 	return left;
@@ -370,7 +370,7 @@ ExprPtr Parser::comparison() {
 		
 		ExprPtr right = term();
 
-		left = ExprPtr(new Binary(op, left, right));
+		left = Binary(op, left, right).ToPtr();
 	}
 
 	return left;
@@ -385,7 +385,7 @@ ExprPtr Parser::term() {
 		
 		ExprPtr right = factor();
 
-		left = ExprPtr(new Binary(op, left, right));
+		left = Binary(op, left, right).ToPtr();
 	}
 
 	return left;
@@ -400,7 +400,7 @@ ExprPtr Parser::factor() {
 		
 		ExprPtr right = unary();
 
-		left = ExprPtr(new Binary(op, right, left));
+		left = Binary(op, left, right).ToPtr();
 	}
 
 	return left;
@@ -412,7 +412,7 @@ ExprPtr Parser::unary() {
 	if ((op = match(2, TokenType::BANG, TokenType::MINUS)) != TokenType::UNKNOWN) {
 		ExprPtr right = call();
 
-		return ExprPtr(new Unary(op, right));
+		return Unary(op, right).ToPtr();
 	}
 
 	return call();
@@ -432,15 +432,15 @@ ExprPtr Parser::call() {
 
 		consume(TokenType::RIGHT_PAREN, "Expected ')' after params.");
 		
-		left = ExprPtr(new Call(left, args));
+		left = Call(left, args).ToPtr();
 	}
 
 	return left;
 }
 
 ExprPtr Parser::primary() {
-	if (match(TokenType::TRUE)) return ExprPtr(new Primary(TypePtr(new Value(true))));
-	if (match(TokenType::FALSE)) return ExprPtr(new Primary(TypePtr(new Value(false))));
+	if (match(TokenType::TRUE)) return Primary(Value(true).ToPtr()).ToPtr();
+	if (match(TokenType::FALSE)) return Primary(Value(false).ToPtr()).ToPtr();
 
 	// Variable resolution
 	if (peek().GetType() == TokenType::IDENTIFIER) {
@@ -451,18 +451,18 @@ ExprPtr Parser::primary() {
 			throw makeCompilerError("Unkown identifier '" + name + "'."); 
 		}
 
-		return ExprPtr(new Identifier(id));
+		return Identifier(id).ToPtr();
 	}
 
 	// Value constructor with no args constructs a nil value
-	if (match(TokenType::NIL)) return ExprPtr(new Primary(TypePtr(new Value())));
+	if (match(TokenType::NIL)) return Primary(Value().ToPtr()).ToPtr();
 
 	if (match(TokenType::LEFT_PAREN)) {
 		ExprPtr expr = expression();
 
 		consume(TokenType::RIGHT_PAREN, "Expected ')' after group.");
 
-		return ExprPtr(new Grouping(expr));
+		return Grouping(expr).ToPtr();
 	}
 
 	if (peek().GetType() == TokenType::NUMBER) {
@@ -470,12 +470,12 @@ ExprPtr Parser::primary() {
 
 		std::cout << number.GetValue() << " Is a number\n";
 
-		return ExprPtr(new Primary(TypePtr(new Value(number.GetValue()))));
+		return Primary(Value(number.GetValue()).ToPtr()).ToPtr();
 	}
 
 	if (peek().GetType() == TokenType::STRING) {
 		Token str = advance();
-		return ExprPtr(new Primary(TypePtr(new Value(str.GetLiteral()))));
+		return Primary(Value(str.GetLiteral()).ToPtr()).ToPtr();
 	}
 
 	if (peek().GetType() == TokenType::IDENTIFIER) {

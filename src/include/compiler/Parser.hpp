@@ -17,7 +17,7 @@ public:
 		m_twoNext = m_scanner.ScanToken();
 	}
 
-	std::vector<StmtPtr> GetAst();
+	StmtPtr GetAst();
 private:
 	Token peek();
 	Token peekNext();

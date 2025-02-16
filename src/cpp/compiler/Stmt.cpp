@@ -12,6 +12,10 @@ void VariableDeclaration::Accept(StatementVisitor& visitor) {
 	visitor.VisitVariableDeclaration(*this);
 }
 
+StmtPtr VariableDeclaration::ToPtr() {
+	return StmtPtr(new VariableDeclaration(*this));
+}
+
 std::string PrintStatement::ToString(int depth = 0) {
 	std::string prefix(" ", depth);
 
@@ -20,6 +24,10 @@ std::string PrintStatement::ToString(int depth = 0) {
 
 void PrintStatement::Accept(StatementVisitor& visitor) {
 	visitor.VisitPrintStatement(*this);
+}
+
+StmtPtr PrintStatement::ToPtr() {
+	return StmtPtr(new PrintStatement(*this));
 }
 
 std::string BlockStatement::ToString(int depth = 0) {
@@ -37,6 +45,10 @@ std::string BlockStatement::ToString(int depth = 0) {
 
 void BlockStatement::Accept(StatementVisitor& visitor) {
 	visitor.VisitBlockStatement(*this);
+}
+
+StmtPtr BlockStatement::ToPtr() {
+	return StmtPtr(new BlockStatement(*this));
 }
 
 std::string IfObject::ToString(int depth = 0) {
@@ -70,6 +82,10 @@ void IfStatement::Accept(StatementVisitor& visitor) {
 	visitor.VisitIfStatement(*this);
 }
 
+StmtPtr IfStatement::ToPtr() {
+	return StmtPtr(new IfStatement(*this));
+}
+
 std::string WhileStatement::ToString(int depth = 0) {
 	std::string prefix(" ", depth);
 
@@ -83,12 +99,20 @@ void WhileStatement::Accept(StatementVisitor& visitor) {
 	visitor.VisitWhileStatement(*this);
 }
 
+StmtPtr WhileStatement::ToPtr() {
+	return StmtPtr(new WhileStatement(*this));
+}
+
 std::string ExpressionStatement::ToString(int depth = 0) {
 	return std::string(" ", depth) + "Expression statement, expression = " + m_expr->ToString() + "\n";
 }
 
 void ExpressionStatement::Accept(StatementVisitor& visitor) {
 	visitor.VisitExpressionStatement(*this);
+}
+
+StmtPtr ExpressionStatement::ToPtr() {
+	return StmtPtr(new ExpressionStatement(*this));
 }
 
 std::string FunctionDeclaration::ToString(int depth = 0) {
@@ -109,10 +133,18 @@ void FunctionDeclaration::Accept(StatementVisitor& visitor) {
 	visitor.VisitFunctionDeclaration(*this);
 }
 
+StmtPtr FunctionDeclaration::ToPtr() {
+	return StmtPtr(new FunctionDeclaration(*this));
+}
+
 std::string ReturnStatement::ToString(int depth = 0) {
 	return std::string(" ", depth) + "Return statement, return expr = " + m_returnExpr->ToString();
 }
 
 void ReturnStatement::Accept(StatementVisitor& visitor) {
 	visitor.VisitReturnStatement(*this);
+}
+
+StmtPtr ReturnStatement::ToPtr() {
+	return StmtPtr(new ReturnStatement(*this));
 }

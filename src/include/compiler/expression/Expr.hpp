@@ -18,6 +18,9 @@ enum class ExprType {
 	CALL
 };
 
+class Expr;
+typedef std::shared_ptr<Expr> ExprPtr;
+
 class Expr {
 public:
     virtual ExprType GetExprType() = 0;
@@ -28,9 +31,9 @@ public:
 	// For the visitor pattern, must use `std::shared_ptr<Expr>` since `ExprPtr`
 	// is defined after the class is declared
 	virtual TypePtr accept(ExpressionVisitor& visitor) = 0;
-};
 
-typedef std::shared_ptr<Expr> ExprPtr;
+	virtual ExprPtr ToPtr() = 0;
+};
 
 class Binary : public Expr {
 public:
@@ -47,6 +50,8 @@ public:
 
 	TypePtr accept(ExpressionVisitor& visitor);
 
+
+	ExprPtr ToPtr();
 private:
 	TokenType m_op;
 	ExprPtr m_right;
@@ -65,6 +70,7 @@ public:
 
 	TypePtr accept(ExpressionVisitor& visitor);
 
+	ExprPtr ToPtr();
 private:
 	TokenType m_op;
 	ExprPtr m_right;
@@ -81,6 +87,7 @@ public:
 
 	ExprPtr GetExpr() { return m_expr; }
 
+	ExprPtr ToPtr();
 private:
 	ExprPtr m_expr;
 };
@@ -96,6 +103,7 @@ public:
 
 	TypePtr accept(ExpressionVisitor& visitor);
 
+	ExprPtr ToPtr();
 private:
 	TypePtr m_value;
 };
@@ -111,6 +119,7 @@ public:
 
 	TypePtr accept(ExpressionVisitor& visitor);
 
+	ExprPtr ToPtr();
 private:
 	// We only need an ID since the value associated with the 
 	// identifier will only be deduced at runtime 
@@ -127,6 +136,8 @@ public:
 	ExprPtr GetCallee() { return m_callee; }
 
 	TypePtr accept(ExpressionVisitor& visitor);
+	
+	ExprPtr ToPtr();
 private:
 	ExprPtr m_callee;
 	std::vector<ExprPtr> m_args;

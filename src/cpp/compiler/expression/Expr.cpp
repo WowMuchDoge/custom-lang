@@ -26,6 +26,11 @@ TypePtr Binary::accept(ExpressionVisitor& visitor) {
 	return visitor.visitBinaryExpr(*this);
 }
 
+ExprPtr Binary::ToPtr() {
+	// Avoiding the expense of the copy constructor
+	return ExprPtr(new Binary(*this));
+}
+
 ExprType Unary::GetExprType() {
 	return ExprType::UNARY;
 }
@@ -38,6 +43,10 @@ TypePtr Unary::accept(ExpressionVisitor& visitor) {
 	return visitor.visitUnaryExpr(*this);
 }
 
+ExprPtr Unary::ToPtr() {
+	return ExprPtr(new Unary(*this));
+}
+
 ExprType Grouping::GetExprType() {
 	return ExprType::GROUPING;
 }
@@ -48,6 +57,10 @@ std::string Grouping::ToString() {
 
 TypePtr Grouping::accept(ExpressionVisitor& visitor) {
 	return visitor.visitGroupingExpr(*this);
+}
+
+ExprPtr Grouping::ToPtr() {
+	return ExprPtr(new Grouping(*this));
 }
 
 ExprType Primary::GetExprType() {
@@ -83,6 +96,10 @@ TypePtr Primary::accept(ExpressionVisitor& visitor) {
 	return visitor.visitPrimaryExpr(*this);
 }
 
+ExprPtr Primary::ToPtr() {
+	return ExprPtr(new Primary(*this));
+}
+
 std::string Identifier::ToString() {
 	return "[Identifier, id = " + std::to_string(m_id) + "]";
 }
@@ -93,6 +110,10 @@ ExprType Identifier::GetExprType() {
 
 TypePtr Identifier::accept(ExpressionVisitor& visitor) {
 	return visitor.visitIdentifierExpr(*this);
+}
+
+ExprPtr Identifier::ToPtr() {
+	return ExprPtr(new Identifier(*this));
 }
 
 std::string Call::ToString() {
@@ -113,4 +134,8 @@ ExprType Call::GetExprType() {
 
 TypePtr Call::accept(ExpressionVisitor& visitor) {
 	return visitor.visitCallExpr(*this);
+}
+
+ExprPtr Call::ToPtr() {
+	return ExprPtr(new Call(*this));
 }

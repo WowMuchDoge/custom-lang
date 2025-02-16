@@ -7,6 +7,9 @@
 
 class StatementVisitor;
 
+class Stmt;
+typedef std::shared_ptr<Stmt> StmtPtr;
+
 class Stmt {
 public:
 	// For debugging purposes, depth is recursive depth 
@@ -15,6 +18,8 @@ public:
 
 	// The function that will accept the statement visitor
 	virtual void Accept(StatementVisitor& visitor) = 0;
+
+	virtual StmtPtr ToPtr() = 0;
 };
 
 typedef std::shared_ptr<Stmt> StmtPtr;
@@ -27,6 +32,8 @@ public:
 	std::string GetName();
 
 	std::string ToString(int depth);
+
+	StmtPtr ToPtr();
 private:
 	// Since language is statically scoped, the initial
 	// expression will only be evaluated when the variable
@@ -46,6 +53,8 @@ public:
 	ExprPtr GetExpression() { return m_expr; }
 
 	void Accept(StatementVisitor& visitor);
+
+	StmtPtr ToPtr();
 private:
 	ExprPtr m_expr;
 };
@@ -59,6 +68,8 @@ public:
 	std::vector<StmtPtr> GetStatements() { return m_statements; }
 
 	std::string ToString(int depth);
+
+	StmtPtr ToPtr();
 private:
 	std::vector<StmtPtr> m_statements;
 };
@@ -76,7 +87,7 @@ public:
 
 	StmtPtr GetStmt() { return m_statement; }
 
-	void Accept(StatementVisitor& visitor);
+	StmtPtr ToPtr();
 private:
 
 	// There would be no expression in an `else` control path
@@ -93,6 +104,8 @@ public:
 	std::vector<IfObject> GetIfs() { return m_ifChain; }
 
 	void Accept(StatementVisitor& visitor);
+
+	StmtPtr ToPtr();
 private:
 	std::vector<IfObject> m_ifChain;
 };
@@ -107,6 +120,8 @@ public:
 	StmtPtr GetStmt() { return m_stmt; }
 
 	void Accept(StatementVisitor& visitor);
+
+	StmtPtr ToPtr();
 private:
 	ExprPtr m_expr;
 	StmtPtr m_stmt;
@@ -122,6 +137,7 @@ public:
 
 	void Accept(StatementVisitor& visitor);
 
+	StmtPtr ToPtr();
 private:
 	ExprPtr m_expr;
 };
@@ -134,6 +150,8 @@ public:
 	std::string ToString(int detph);
 
 	void Accept(StatementVisitor& visitor);
+
+	StmtPtr ToPtr();
 private:
 	std::vector<std::string> m_params;
 	BlockStatement m_block;
@@ -146,6 +164,8 @@ public:
 	std::string ToString(int depth);
 
 	void Accept(StatementVisitor& visitor);
+
+	StmtPtr ToPtr();
 private:
 	ExprPtr m_returnExpr;
 };

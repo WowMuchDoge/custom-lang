@@ -6,7 +6,6 @@
 
 #include "Constants.hpp"
 #include "compiler/Parser.hpp"
-#include "interpreter/ExpressionVisitor.hpp"
 #include "interpreter/StatementVisitor.hpp"
 
 std::string getExtension(std::string fileName) {
@@ -53,39 +52,29 @@ int main(int argc, char **argv) {
     }
 
 	Parser parser(readFile(argv[1]));
-	std::vector<StmtPtr> statements;
+	StmtPtr programBlock;
 
 	try {
-		statements = parser.GetAst();
+		programBlock = parser.GetAst();
 	} catch (Error* e) {
 		e->Print();
 	}
 
 	SymbolTable st;
-	StatementVisitor sv{st};
+	ExpressionVisitor ev{st};
+	StatementVisitor sv{st, ev};
 
-	for (auto statement : statements) {
-		std::cout << statement->ToString() << std::endl;
-		statement->Accept(sv);
-	}
+	// for (auto statement : statements) {
+	// 	std::cout << statement->ToString() << std::endl;
+	// 	statement->Accept(sv);
+	// }
+	
+	std::cout << programBlock->ToString();
+	programBlock->Accept(sv);
 
 	auto end = std::chrono::high_resolution_clock::now();
 
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 
 	std::cout << "Completed in " << duration.count() << "ms." << std::endl;
-
-	// SymbolTable t;	
-	//
-	// StatementVisitor sv(t);
-	//
-	// Value n1(1.0);
-	// Value n2(5.0);
-	//
-	// ExprPtr p1(new Primary(n1));
-	// ExprPtr p2(new Primary(n2));
-	//
-	// ExprPtr add(new Binary(TokenType::PLUS, p1, p2));
-	//
-	// StmtPtr varDec(new VariableDeclaration(add));
 }
