@@ -77,6 +77,9 @@ int main(int argc, char **argv) {
 	vs.ChangeScope(st2);
 	vs.ChangeScope(st);
 
+	st.PrintStack();
+	st2.PrintStack();
+
 	// for (auto statement : statements) {
 	// 	std::cout << statement->ToString() << std::endl;
 	// 	statement->Accept(sv);
