@@ -2,6 +2,14 @@
 
 #include <iostream>
 
+TypePtr& SymbolTable::GetTail() {
+	return m_table.back();
+}
+
+TypePtr& SymbolTable::GetHead() {
+	return m_table[0];
+}
+
 void SymbolTable::NewScope() {
 	m_scopeBorders.push_back(getTableHeadIndex());
 }
@@ -26,4 +34,14 @@ TypePtr SymbolTable::Get(int index) {
 
 int SymbolTable::getTableHeadIndex() {
 	return m_table.size() - 1;
+}
+
+void SymbolTable::PrintStack() {
+	std::cout << "Symbol stack: [\n";
+
+	for (TypePtr val : m_table) {
+		std::cout << val->ToString() << "\n";
+	}
+
+	std::cout << "]\n";
 }

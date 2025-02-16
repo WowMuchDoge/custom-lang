@@ -134,6 +134,7 @@ public:
 	std::string ToString();
 
 	ExprPtr GetCallee() { return m_callee; }
+	std::vector<ExprPtr> GetArgs() { return m_args; }
 
 	TypePtr accept(ExpressionVisitor& visitor);
 	

@@ -6,7 +6,7 @@
 
 class StatementVisitor {
 public:
-	StatementVisitor(SymbolTable& table, ExpressionVisitor& exprVisitor) : m_table{table}, m_exprVisitor{exprVisitor} {}
+	StatementVisitor(SymbolTable& table) : m_table{table}, m_exprVisitor{ExpressionVisitor{m_table, *this}} {}
 	
 	void VisitVariableDeclaration(VariableDeclaration stmt);
 	void VisitPrintStatement(PrintStatement stmt);
@@ -23,5 +23,5 @@ private:
 	Value evaluateValue(ExprPtr expr);
 
 	SymbolTable& m_table;
-	ExpressionVisitor& m_exprVisitor;
+	ExpressionVisitor m_exprVisitor;
 };

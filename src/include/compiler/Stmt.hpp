@@ -151,6 +151,9 @@ public:
 
 	void Accept(StatementVisitor& visitor);
 
+	std::vector<std::string> GetParams() { return m_params; }
+	StmtPtr GetBlock() { return m_block.ToPtr(); }
+
 	StmtPtr ToPtr();
 private:
 	std::vector<std::string> m_params;

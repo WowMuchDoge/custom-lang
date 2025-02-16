@@ -1,4 +1,5 @@
 #include "interpreter/StatementVisitor.hpp"
+#include "interpreter/Callable.hpp"
 
 #include <iostream>
 
@@ -56,7 +57,11 @@ void StatementVisitor::VisitExpressionStatement(ExpressionStatement stmt) {
 }
 
 void StatementVisitor::VisitFunctionDeclaration(FunctionDeclaration stmt) {
+	// std::cout << stmt.ToString(0) << std::endl;
+	m_table.Push(Callable(stmt.GetBlock(), stmt.GetParams()).ToPtr());
 
+	// Necessary since the table that the callable has must include itself
+	m_table.GetHead()->AsCallable().SetTable(m_table);
 }
 
 void StatementVisitor::VisitReturnStatement(ReturnStatement stmt) {

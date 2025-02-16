@@ -37,7 +37,7 @@ public:
 	// since I used to do it and it broke a bunch of stuff. 
 	// My sincere apologies. Defaults to throw so each class
 	// that implements the interface only has to implement the
-	// type it is
+	// function for the type it is
 	virtual Value& AsValue() {
 		throw;
 	}

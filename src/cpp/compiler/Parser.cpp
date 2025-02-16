@@ -274,7 +274,7 @@ StmtPtr Parser::expressionStatement(bool requireSemicolon) {
 }
 
 StmtPtr Parser::functionDeclaration() {
-	std::string functionName = consume(TokenType::IDENTIFIER, "Expected identifier after 'func'.").GetLiteral();
+	std::string functionName = consume(TokenType::IDENTIFIER, "Expected identifier after 'fn'.").GetLiteral();
 
 	consume(TokenType::LEFT_PAREN, "Expected '(' after function name.");
 
@@ -284,18 +284,17 @@ StmtPtr Parser::functionDeclaration() {
 	m_scope.Push(functionName);
 	
 	std::vector<std::string> params;
-	std::vector<StmtPtr> functionBlock;
 
 	m_scope.NewScope();
 
 	while (peek().GetType() == TokenType::IDENTIFIER) {
 		Token param = advance();
 
-		m_scope.Push(param.GetLiteral());
 		// Needed so we don't get compiler errors. A function is declared before it is called so
 		// its parameters are not populated. These are the placeholder args that will be replaced
 		// at runtime by the actual arguments
-		functionBlock.push_back(VariableDeclaration(Primary(Value().ToPtr()).ToPtr()).ToPtr());
+		m_scope.Push(param.GetLiteral());
+
 		params.push_back(param.GetLiteral());
 
 		if (!match(TokenType::COMMA)) break;
@@ -306,13 +305,12 @@ StmtPtr Parser::functionDeclaration() {
 	consume(TokenType::LEFT_BRACE, "Expected '{' in function declaration.");
 
 	// This will put the params in a scope that is one above the function scope
-	functionBlock.push_back(blockStatement());
+	StmtPtr functionBlock = blockStatement();
 
 	m_scope.EndScope();
 
-	BlockStatement block(functionBlock);
-
-	return FunctionDeclaration(params, block).ToPtr();
+	// We do a microplastic amount of (cast) trolling
+	return FunctionDeclaration(params, (*(BlockStatement*)functionBlock.get()).GetStatements()).ToPtr();
 }
 
 StmtPtr Parser::returnStatement() {
@@ -424,7 +422,7 @@ ExprPtr Parser::call() {
 	while (match(TokenType::LEFT_PAREN)) {
 		std::vector<ExprPtr> args;
 	
-		while (true) {
+		while (peek().GetType() != TokenType::RIGHT_PAREN) {
 			args.push_back(expression());
 
 			if (!match(TokenType::COMMA)) break;
@@ -467,8 +465,6 @@ ExprPtr Parser::primary() {
 
 	if (peek().GetType() == TokenType::NUMBER) {
 		Token number = advance();
-
-		std::cout << number.GetValue() << " Is a number\n";
 
 		return Primary(Value(number.GetValue()).ToPtr()).ToPtr();
 	}

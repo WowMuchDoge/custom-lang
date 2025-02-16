@@ -1,5 +1,7 @@
 #include "compiler/Stmt.hpp"
 
+#include <iostream>
+
 #include "interpreter/StatementVisitor.hpp"
 
 std::string VariableDeclaration::ToString(int depth = 0) {

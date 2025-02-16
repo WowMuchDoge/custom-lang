@@ -1,8 +1,11 @@
 #include "interpreter/ExpressionVisitor.hpp"
+#include "interpreter/StatementVisitor.hpp"
 
 #include <limits>
 #include <cmath>
 #include <iostream>
+
+#include "interpreter/Callable.hpp"
 
 TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 	TypePtr leftType = expr.GetLeft()->accept(*this);
@@ -222,9 +225,28 @@ TypePtr ExpressionVisitor::visitIdentifierExpr(Identifier expr) {
 }
 
 TypePtr ExpressionVisitor::visitCallExpr(Call expr) {
-	// Calls are complicated, will do later (probably gonna
-	// have to store call stack info here)
-	return Value().ToPtr();
+	// If we have functions that return functions, we of course
+	// evaluate those first, and then we get our callable type.
+	// A bit of a recurseive approach, but eventually our
+	// `visitIdentifier()` method will catch it and return the
+	// first underlying callable which will then be called and returned
+	// so we can find the next and so on
+
+	TypePtr callable = expr.GetCallee()->accept(*this);
+
+
+	if (callable->GetType() != ValueType::FUNCTION) {
+		// We cannot things that are not callable
+		throw;
+	}
+
+	std::vector<TypePtr> args;
+
+	for (ExprPtr arg : expr.GetArgs()) {
+		args.push_back(arg->accept(*this));
+	}
+
+	return callable->AsCallable().Call(m_statementVisitor, m_symbols, args);
 }
 
 bool ExpressionVisitor::isInteger(double n) {

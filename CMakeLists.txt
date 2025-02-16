@@ -31,6 +31,7 @@ set(CPP_SOURCES ${CPP_DIR}/main.cpp
 				${INTERPRETER_DIR}/ExpressionVisitor.cpp
 				${INTERPRETER_DIR}/SymbolTable.cpp
 				${INTERPRETER_DIR}/StatementVisitor.cpp
+				${INTERPRETER_DIR}/Callable.cpp
 				${ERROR_DIR}/ScannerError.cpp
 				${ERROR_DIR}/CompilerError.cpp
 )

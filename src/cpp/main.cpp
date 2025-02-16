@@ -61,15 +61,14 @@ int main(int argc, char **argv) {
 	}
 
 	SymbolTable st;
-	ExpressionVisitor ev{st};
-	StatementVisitor sv{st, ev};
+	StatementVisitor sv{st};
 
 	// for (auto statement : statements) {
 	// 	std::cout << statement->ToString() << std::endl;
 	// 	statement->Accept(sv);
 	// }
-	
-	std::cout << programBlock->ToString();
+
+	std::cout << programBlock->ToString() << std::endl;
 	programBlock->Accept(sv);
 
 	auto end = std::chrono::high_resolution_clock::now();

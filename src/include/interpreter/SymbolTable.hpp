@@ -15,6 +15,11 @@ public:
 	void Push(TypePtr val);
 
 	TypePtr Get(int index);
+	
+	TypePtr& GetTail();
+	TypePtr& GetHead();
+
+	void PrintStack();
 private:
 
 	// The borders of the scope so when we leave a scope we know what position to delete to
