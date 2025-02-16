@@ -234,6 +234,9 @@ TypePtr ExpressionVisitor::visitCallExpr(Call expr) {
 
 	TypePtr callable = expr.GetCallee()->accept(*this);
 
+	std::cout << "Callable, stack is ";
+	m_symbols.PrintStack();
+
 
 	if (callable->GetType() != ValueType::FUNCTION) {
 		// We cannot things that are not callable

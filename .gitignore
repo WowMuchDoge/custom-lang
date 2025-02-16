@@ -1,3 +1,12 @@
 build/
 .vscode/
 .cache/
+
+*.sln
+*.vcxproj
+*.filters
+*.user
+.vs/
+x64/
+Custom-L.6390AB16/
+custom-lang/
