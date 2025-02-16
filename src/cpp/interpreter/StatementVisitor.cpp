@@ -62,6 +62,9 @@ void StatementVisitor::VisitFunctionDeclaration(FunctionDeclaration stmt) {
 
 	// Necessary since the table that the callable has must include itself
 	m_table.GetHead()->AsCallable().SetTable(m_table);
+
+	std::cout << "Pushed function, stack is ";
+	m_table.PrintStack();
 }
 
 void StatementVisitor::VisitReturnStatement(ReturnStatement stmt) {
@@ -81,5 +84,7 @@ Value StatementVisitor::evaluateValue(ExprPtr expr) {
 }
 
 void StatementVisitor::ChangeScope(SymbolTable& table) {
+	std::cout << "New table for statement visitor is ";
+	table.PrintStack();
 	m_table = table;
 }

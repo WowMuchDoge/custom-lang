@@ -234,7 +234,7 @@ TypePtr ExpressionVisitor::visitCallExpr(Call expr) {
 
 	TypePtr callable = expr.GetCallee()->accept(*this);
 
-	std::cout << "Callable, stack is ";
+	std::cout << "Callable visited, stack is ";
 	m_symbols.PrintStack();
 
 
