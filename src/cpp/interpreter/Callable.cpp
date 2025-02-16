@@ -18,7 +18,7 @@ Callable& Callable::AsCallable() {
 	return *this;
 }
 
-TypePtr Callable::Call(StatementVisitor& visitor, SymbolTable &currentScope, std::vector<TypePtr> args) {
+TypePtr Callable::Call(StatementVisitor& visitor, SymbolTable *currentScope, std::vector<TypePtr> args) {
 	// If arity isn't the same, we didn't call the function properly
 
 	if (args.size() != m_params.size()) throw;
@@ -31,7 +31,7 @@ TypePtr Callable::Call(StatementVisitor& visitor, SymbolTable &currentScope, std
 		m_symbolTable.Push(arg);
 	}
 
-	visitor.ChangeScope(m_symbolTable);
+	visitor.ChangeScope(&m_symbolTable);
 
 	m_block->Accept(visitor);
 

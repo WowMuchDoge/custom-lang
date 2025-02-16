@@ -20,7 +20,7 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 
 			// Line of code is a little cursed, but `Get()` returns a reference
 			// so we can assign it however we want
-			m_symbols.Get(variable->GetId()) = rightType;
+			m_symbols->Get(variable->GetId()) = rightType;
 
 			return rightType;	
 	}
@@ -118,7 +118,7 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 			// trickery to force it to be a reference. Remember, this works since
 			// the memory location of the pointer is essentially `const` to us, but
 			// we can do whatever we want with the underlying value
-			m_symbols.Get(variable->GetId())->AsValue() = rightValue;
+			m_symbols->Get(variable->GetId())->AsValue() = rightValue;
 
 			return Value(rightValue).ToPtr();
 		}
@@ -221,7 +221,7 @@ TypePtr ExpressionVisitor::visitPrimaryExpr(Primary expr) {
 }
 
 TypePtr ExpressionVisitor::visitIdentifierExpr(Identifier expr) {
-	return m_symbols.Get(expr.GetId());
+	return m_symbols->Get(expr.GetId());
 }
 
 TypePtr ExpressionVisitor::visitCallExpr(Call expr) {
@@ -233,10 +233,6 @@ TypePtr ExpressionVisitor::visitCallExpr(Call expr) {
 	// so we can find the next and so on
 
 	TypePtr callable = expr.GetCallee()->accept(*this);
-
-	std::cout << "Callable visited, stack is ";
-	m_symbols.PrintStack();
-
 
 	if (callable->GetType() != ValueType::FUNCTION) {
 		// We cannot things that are not callable

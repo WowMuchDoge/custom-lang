@@ -15,10 +15,7 @@ void SymbolTable::NewScope() {
 }
 
 void SymbolTable::EndScope() {
-	std::cout << "Endscope called, Stack is ";
-	PrintStack();
 	while (getTableHeadIndex() != m_scopeBorders.back()) {
-		std::cout << "Removed " << m_table.back()->ToString() << std::endl;
 		m_table.pop_back();
 	}
 }

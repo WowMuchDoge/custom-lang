@@ -4,7 +4,7 @@
 #include <iostream>
 
 void StatementVisitor::VisitVariableDeclaration(VariableDeclaration stmt) {
-	m_table.Push(evaluate(stmt.GetExpr()));
+	m_table->Push(evaluate(stmt.GetExpr()));
 }
 
 void StatementVisitor::VisitPrintStatement(PrintStatement stmt) {
@@ -12,11 +12,11 @@ void StatementVisitor::VisitPrintStatement(PrintStatement stmt) {
 }
 
 void StatementVisitor::VisitBlockStatement(BlockStatement stmt) {
-	m_table.NewScope();
+	m_table->NewScope();
 	for (StmtPtr statement : stmt.GetStatements()) {
 		statement->Accept(*this);
 	}
-	m_table.EndScope();
+	m_table->EndScope();
 }
 
 void StatementVisitor::VisitIfStatement(IfStatement stmt) {
@@ -57,14 +57,10 @@ void StatementVisitor::VisitExpressionStatement(ExpressionStatement stmt) {
 }
 
 void StatementVisitor::VisitFunctionDeclaration(FunctionDeclaration stmt) {
-	// std::cout << stmt.ToString(0) << std::endl;
-	m_table.Push(Callable(stmt.GetBlock(), stmt.GetParams()).ToPtr());
+	m_table->Push(Callable(stmt.GetBlock(), stmt.GetParams()).ToPtr());
 
 	// Necessary since the table that the callable has must include itself
-	m_table.GetHead()->AsCallable().SetTable(m_table);
-
-	std::cout << "Pushed function, stack is ";
-	m_table.PrintStack();
+	m_table->GetHead()->AsCallable().SetTable(*m_table);
 }
 
 void StatementVisitor::VisitReturnStatement(ReturnStatement stmt) {
@@ -83,8 +79,6 @@ Value StatementVisitor::evaluateValue(ExprPtr expr) {
 	return ptr->AsValue();
 }
 
-void StatementVisitor::ChangeScope(SymbolTable& table) {
-	std::cout << "New table for statement visitor is ";
-	table.PrintStack();
+void StatementVisitor::ChangeScope(SymbolTable* table) {
 	m_table = table;
 }
