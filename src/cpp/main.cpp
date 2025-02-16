@@ -61,32 +61,10 @@ int main(int argc, char **argv) {
 	}
 
 	SymbolTable st;
-	SymbolTable st2;
+	StatementVisitor sv{ st };
 
-	StatementVisitor vs{ st };
-
-	st.Push(Value(123.0).ToPtr());
-	st.Push(Value(false).ToPtr());
-	st.Push(Value().ToPtr());
-
-	st2.Push(Value(69.0).ToPtr());
-
-	//st.PrintStack();
-	//st2.PrintStack();
-
-	vs.ChangeScope(st2);
-	vs.ChangeScope(st);
-
-	st.PrintStack();
-	st2.PrintStack();
-
-	// for (auto statement : statements) {
-	// 	std::cout << statement->ToString() << std::endl;
-	// 	statement->Accept(sv);
-	// }
-
-	//std::cout << programBlock->ToString() << std::endl;
-	//programBlock->Accept(sv);
+	std::cout << programBlock->ToString() << std::endl;
+	programBlock->Accept(sv);
 
 	auto end = std::chrono::high_resolution_clock::now();
 
