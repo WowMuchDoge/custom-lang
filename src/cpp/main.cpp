@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
 	}
 
 	SymbolTable st;
-	StatementVisitor sv{st};
+	StatementVisitor sv{&st};
 
 	std::cout << programBlock->ToString() << std::endl;
 	programBlock->Accept(sv);
