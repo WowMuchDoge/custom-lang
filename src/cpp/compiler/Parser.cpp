@@ -122,6 +122,15 @@ StmtPtr Parser::statement() {
 StmtPtr Parser::variableDeclaration(bool requireSemicolon) {
 	Token var = consume(TokenType::IDENTIFIER, "Unexpected keyword '" + peek().GetLiteral() + "' in variable declaration.");
 
+	// This means that the variable exists somewhere. Design differs from many languages where the
+	// same variable named can be declared multiple times as long as the declarations do not occur
+	// in the same scope. However, from a design standpoint if you are redeclaring a variable even
+	// in a nested scope you are probably doing something wrong or your code is gonna read real
+	// weird, so I decided to just make it a compiler error.
+	if (m_scope.Resolve(var.GetLiteral()) != -1) {
+		throw makeCompilerError("Variable '" + var.GetLiteral() + "' has already been declared."); 
+	}
+
 	m_scope.Push(var.GetLiteral());
 
 	ExprPtr expr = Primary(Value().ToPtr()).ToPtr();
