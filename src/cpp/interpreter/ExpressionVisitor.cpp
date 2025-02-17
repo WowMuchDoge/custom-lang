@@ -91,7 +91,7 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 
 			// Line of code is a little cursed, but `Get()` returns a reference
 			// so we can assign it however we want.
-			m_symbols->Get(variable.GetId()) = right;
+			m_symbols.Get(variable.GetId()) = right;
 
 			return right;
 		}
@@ -197,8 +197,8 @@ TypePtr ExpressionVisitor::visitPrimaryExpr(Primary expr) {
 
 TypePtr ExpressionVisitor::visitIdentifierExpr(Identifier expr) {
 	std::cout << "On identifier\n";
-	m_symbols->PrintStack();
-	return m_symbols->Get(expr.GetId());
+	m_symbols.PrintStack();
+	return m_symbols.Get(expr.GetId());
 }
 
 TypePtr ExpressionVisitor::visitCallExpr(Call expr) {
@@ -232,6 +232,6 @@ bool ExpressionVisitor::isInteger(double n) {
 	return std::fabs(n - comparison) < std::numeric_limits<double>::epsilon();
 }
 
-void ExpressionVisitor::ChangeScope(SymbolTable* table) {
+void ExpressionVisitor::ChangeScope(SymbolTable& table) {
 	m_symbols = table;
 }

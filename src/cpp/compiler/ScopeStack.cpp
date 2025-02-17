@@ -4,17 +4,17 @@
 
 void ScopeStack::Push(std::string name) {
 	m_symbolSlots.back().insert({name, m_currentSlot++});
-	std::cout << "Pushed " << name << " Slot index " << m_currentSlot - 1 << "\n";
+	// std::cout << "Pushed " << name << " Slot index " << m_currentSlot - 1 << "\n";
 }
 
 void ScopeStack::NewScope() {
 	m_beginSlots.push_back(m_currentSlot);
-	std::cout << "New scope, last used was " << m_beginSlots.back() << std::endl;
+	// std::cout << "New scope, last used was " << m_beginSlots.back() << std::endl;
 	m_symbolSlots.push_back(std::unordered_map<std::string, int>());
 }
 
 void ScopeStack::EndScope() {
-	std::cout << "Reverting slot from " << m_currentSlot << " to " << m_beginSlots.back() << std::endl;
+	// std::cout << "Reverting slot from " << m_currentSlot << " to " << m_beginSlots.back() << std::endl;
 	m_currentSlot = m_beginSlots.back();
 	m_symbolSlots.pop_back();
 	m_beginSlots.pop_back();

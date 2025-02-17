@@ -7,7 +7,7 @@ class StatementVisitor;
 
 class ExpressionVisitor {
 public:
-	ExpressionVisitor(SymbolTable* symbols, StatementVisitor& statementVisitor) : m_symbols{symbols}, m_statementVisitor{statementVisitor} {}	
+	ExpressionVisitor(SymbolTable& symbols, StatementVisitor& statementVisitor) : m_symbols{symbols}, m_statementVisitor{statementVisitor} {}	
 
 	TypePtr visitBinaryExpr(Binary expr);
 	TypePtr visitUnaryExpr(Unary expr);
@@ -16,12 +16,12 @@ public:
 	TypePtr visitIdentifierExpr(Identifier expr);
 	TypePtr visitCallExpr(Call expr);
 
-	void ChangeScope(SymbolTable* table);
+	void ChangeScope(SymbolTable& table);
 
 private:
 	static bool isInteger(double n);
 
-	SymbolTable* m_symbols;
+	SymbolTable& m_symbols;
 
 	StatementVisitor& m_statementVisitor;
 };

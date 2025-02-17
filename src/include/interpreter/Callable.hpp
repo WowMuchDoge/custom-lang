@@ -19,7 +19,7 @@ public:
 	Callable& AsCallable() override;
 	TypePtr ToPtr() override;
 
-	TypePtr Call(StatementVisitor& visitor, SymbolTable *currentScope, std::vector<TypePtr> args);
+	TypePtr Call(StatementVisitor& visitor, SymbolTable& currentScope, std::vector<TypePtr> args);
 private:	
 	SymbolTable m_symbolTable;
 	StmtPtr m_block;
