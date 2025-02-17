@@ -175,6 +175,8 @@ public:
 	void Accept(StatementVisitor& visitor);
 
 	StmtPtr ToPtr();
+
+	ExprPtr GetExpr() { return m_returnExpr; }
 private:
 	ExprPtr m_returnExpr;
 };

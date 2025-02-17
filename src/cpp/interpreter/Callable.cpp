@@ -28,8 +28,12 @@ TypePtr Callable::Call(StatementVisitor* visitor, SymbolTable* currentScope, std
 
 		currentScope->Push(arg);
 	}
-
-	m_block->Accept(*visitor);
+	
+	try {
+		m_block->Accept(*visitor);
+	} catch (TypePtr val) {
+		return val;
+	}
 
 	currentScope->EndScope();
 

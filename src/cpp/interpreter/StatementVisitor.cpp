@@ -64,7 +64,9 @@ void StatementVisitor::VisitFunctionDeclaration(FunctionDeclaration stmt) {
 }
 
 void StatementVisitor::VisitReturnStatement(ReturnStatement stmt) {
-
+	// A touch cursed and inneficient, but this will be caught by the function
+	// and that is the value it will return
+	throw evaluate(stmt.GetExpr());
 }
 
 TypePtr StatementVisitor::evaluate(ExprPtr expr) {

@@ -77,6 +77,8 @@ private:
 	CompilerError m_error;
 
 	// A flag to keep track of whether we are in a call or in
-	// global scope
+	// global scope. This is because if we are in global scope
+	// and `return` is encountered, there is nothing to catch
+	// the value it throws
 	bool m_inCall;
 };
