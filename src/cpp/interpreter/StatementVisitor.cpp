@@ -61,9 +61,6 @@ void StatementVisitor::VisitExpressionStatement(ExpressionStatement stmt) {
 
 void StatementVisitor::VisitFunctionDeclaration(FunctionDeclaration stmt) {
 	m_table->Push(Callable(stmt.GetBlock(), stmt.GetParams()).ToPtr());
-
-	// Necessary since the table that the callable has must include itself
-	m_table->GetTail()->AsCallable().SetTable(*m_table);
 }
 
 void StatementVisitor::VisitReturnStatement(ReturnStatement stmt) {
@@ -80,9 +77,4 @@ Value StatementVisitor::evaluateValue(ExprPtr expr) {
 	if (ptr->GetType() == ValueType::FUNCTION) throw;
 
 	return ptr->AsValue();
-}
-
-void StatementVisitor::ChangeScope(SymbolTable* table) {
-	m_table = table;
-	m_exprVisitor.ChangeScope(table);
 }

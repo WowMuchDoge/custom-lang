@@ -231,7 +231,3 @@ bool ExpressionVisitor::isInteger(double n) {
 	// Goofy ahh double comparison
 	return std::fabs(n - comparison) < std::numeric_limits<double>::epsilon();
 }
-
-void ExpressionVisitor::ChangeScope(SymbolTable* table) {
-	m_symbols = table;
-}

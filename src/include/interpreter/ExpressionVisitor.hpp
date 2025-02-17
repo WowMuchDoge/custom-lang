@@ -16,8 +16,6 @@ public:
 	TypePtr visitIdentifierExpr(Identifier expr);
 	TypePtr visitCallExpr(Call expr);
 
-	void ChangeScope(SymbolTable* table);
-
 private:
 	static bool isInteger(double n);
 

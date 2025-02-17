@@ -2,10 +2,6 @@
 
 #include <iostream>
 
-void Callable::SetTable(SymbolTable table) {
-	m_symbolTable = table;
-}
-
 std::string Callable::ToString() {
 	return "<fn " + std::to_string((uintptr_t)this) + ">";
 }
@@ -31,17 +27,7 @@ TypePtr Callable::Call(StatementVisitor* visitor, SymbolTable* currentScope, std
 		m_symbolTable.Push(arg);
 	}
 
-	// std::cout << "On Call (call table)\n";
-	// m_symbolTable.PrintStack();
-
-	visitor->ChangeScope(&m_symbolTable);
-
 	m_block->Accept(*visitor);
-
-	// std::cout << "Leaving Call (current table)\n";
-	// currentScope->PrintStack();
-
-	visitor->ChangeScope(currentScope);
 
 	return Value().ToPtr();
 }

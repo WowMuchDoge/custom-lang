@@ -16,8 +16,7 @@ public:
 	void VisitExpressionStatement(ExpressionStatement stmt);
 	void VisitFunctionDeclaration(FunctionDeclaration stmt);
 	void VisitReturnStatement(ReturnStatement stmt);
-
-	void ChangeScope(SymbolTable* table);
+	
 private:
 	TypePtr evaluate(ExprPtr expr);
 	Value evaluateValue(ExprPtr expr);

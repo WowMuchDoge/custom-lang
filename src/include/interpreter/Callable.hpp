@@ -12,8 +12,6 @@ public:
 	Callable(StmtPtr toExecute, std::vector<std::string> params) 
 		: m_block{toExecute}, m_params{params} {}
 
-	void SetTable(SymbolTable table);
-
 	std::string ToString() override;
 	ValueType GetType() override;
 	Callable& AsCallable() override;
