@@ -90,10 +90,7 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 			Identifier& variable = *(Identifier*)expr.GetLeft().get();
 
 			// Line of code is a little cursed, but `Get()` returns a reference
-			// so we can assign it however we want. Have to do a little pointer
-			// trickery to force it to be a reference. Remember, this works since
-			// the memory location of the pointer is essentially `const` to us, but
-			// we can do whatever we want with the underlying value
+			// so we can assign it however we want.
 			m_symbols->Get(variable.GetId()) = right;
 
 			return right;

@@ -6,7 +6,7 @@
 
 class ScopeStack {
 public:
-	ScopeStack() : m_depth{0}, m_currentSlot{0} {}
+	ScopeStack() :  m_currentSlot{0} {}
 
 	void Push(std::string name);
 
@@ -15,10 +15,8 @@ public:
 
 	int Resolve(std::string name);
 private:
-	int m_depth;
-
 	// So we know how much to reduce the slot number by
-	int m_beginSlot;
+	std::vector<int> m_beginSlots;
 	int m_currentSlot;
 
 	// String is the name and int is the slot index,
