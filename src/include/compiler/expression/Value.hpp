@@ -19,7 +19,6 @@ enum class ValueType {
     NIL
 };
 
-
 class Value;
 class Callable;
 class IType;

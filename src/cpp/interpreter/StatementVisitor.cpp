@@ -12,6 +12,8 @@ void StatementVisitor::VisitPrintStatement(PrintStatement stmt) {
 }
 
 void StatementVisitor::VisitBlockStatement(BlockStatement stmt) {
+	std::cout << "Visiting block\n";
+	m_table->PrintStack();
 	m_table->NewScope();
 	for (StmtPtr statement : stmt.GetStatements()) {
 		statement->Accept(*this);
@@ -81,4 +83,5 @@ Value StatementVisitor::evaluateValue(ExprPtr expr) {
 
 void StatementVisitor::ChangeScope(SymbolTable* table) {
 	m_table = table;
+	m_exprVisitor.ChangeScope(table);
 }

@@ -28,7 +28,7 @@ void SymbolTable::Push(TypePtr val) {
 	m_table.push_back(val);
 }
 
-TypePtr SymbolTable::Get(int index) {
+TypePtr& SymbolTable::Get(int index) {
 	return m_table[index];
 }
 

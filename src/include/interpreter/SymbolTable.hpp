@@ -14,7 +14,7 @@ public:
 	void Push(); // Pushes `nil` to the symbol table
 	void Push(TypePtr val);
 
-	TypePtr Get(int index);
+	TypePtr& Get(int index);
 	
 	TypePtr& GetTail();
 	TypePtr& GetHead();

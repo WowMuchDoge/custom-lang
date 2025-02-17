@@ -8,41 +8,17 @@
 #include "interpreter/Callable.hpp"
 
 TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
-	TypePtr leftType = expr.GetLeft()->accept(*this);
-	TypePtr rightType = expr.GetRight()->accept(*this);
-
-	// Only one case where function type is valid: where
-	// the leftValue side is an identifier and the rightValue side
-	// is the function and the function only
-	if (expr.GetLeft()->GetExprType() == ExprType::IDENTIFIER &&
-			rightType->GetType() == ValueType::FUNCTION && expr.GetOp() == TokenType::EQUAL) {
-			Identifier *variable = (Identifier*)expr.GetLeft().get();
-
-			// Line of code is a little cursed, but `Get()` returns a reference
-			// so we can assign it however we want
-			m_symbols->Get(variable->GetId()) = rightType;
-
-			return rightType;	
-	}
-
-	if (leftType->GetType() == ValueType::FUNCTION || rightType->GetType() == ValueType::FUNCTION) {
-		// Already did check to see if the function arg is valid,
-		// so it is safe to throw from here
-		throw;
-	}
-
-	Value leftValue = leftType->AsValue();
-	Value rightValue = rightType->AsValue();
-
+	TypePtr left = expr.GetLeft()->accept(*this);
+	TypePtr right = expr.GetRight()->accept(*this);
 
 	// This ain't javascript, we ain't gonna do operations
 	// on values with different types (who the hell would
 	// want that)
-	if (leftValue.GetType() != rightValue.GetType()) {
+	if (left->GetType() != right->GetType()) {
 		throw;
 	}
 
-	ValueType type = leftValue.GetType();
+	ValueType type = left->GetType();
 
 	// Appears to just be returning doubles or bools, but implicit constructor constructs value object
 	// with the return value as the arg
@@ -51,9 +27,9 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 		case TokenType::PLUS: {
 			switch (type) {
 				case ValueType::STRING:
-					return Value(leftValue.GetString() + rightValue.GetString()).ToPtr();
+					return Value(left->AsValue().GetString() + right->AsValue().GetString()).ToPtr();
 				case ValueType::NUMBER:
-					return Value(leftValue.GetNumber() + rightValue.GetNumber()).ToPtr();
+					return Value(left->AsValue().GetNumber() + right->AsValue().GetNumber()).ToPtr();
 				case ValueType::BOOL:
 				case ValueType::FUNCTION:
 				case ValueType::NIL:
@@ -64,12 +40,12 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 		
 			}
 		case TokenType::MINUS: {
-			if (leftValue.GetType() != ValueType::NUMBER) {
+			if (left->GetType() != ValueType::NUMBER) {
 				// We can't really subtract anything but numbers
 				throw;
 			}
 			
-			return Value(leftValue.GetNumber() + rightValue.GetNumber()).ToPtr();
+			return Value(left->AsValue().GetNumber() + right->AsValue().GetNumber()).ToPtr();
 		}
 		case TokenType::STAR: {	
 			if (type != ValueType::NUMBER) {
@@ -77,27 +53,27 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 				throw;
 			}
 			
-			return Value(leftValue.GetNumber() * rightValue.GetNumber()).ToPtr();
+			return Value(left->AsValue().GetNumber() * right->AsValue().GetNumber()).ToPtr();
 		}
 		case TokenType::SLASH: {
 			if (type != ValueType::NUMBER) {
 				throw;
 			}
 
-			if (rightValue.GetNumber() == 0) {
+			if (right->AsValue().GetNumber() == 0) {
 				// Divide by zero error
 				throw;
 			}
 			
-			return Value(leftValue.GetNumber() / rightValue.GetNumber()).ToPtr();
+			return Value(left->AsValue().GetNumber() / right->AsValue().GetNumber()).ToPtr();
 		}
 		case TokenType::MOD: {
 			if (type != ValueType::NUMBER) {
 				throw;
 			}
 
-			double leftNum = leftValue.GetNumber();
-			double rightNum = rightValue.GetNumber();
+			double leftNum = left->AsValue().GetNumber();
+			double rightNum = right->AsValue().GetNumber();
 			
 			if (isInteger(leftNum) && isInteger(rightNum)) {
 				return Value((double)((int)leftNum % (int)rightNum)).ToPtr();
@@ -111,77 +87,79 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 			// 1 = 2 or true = false
 			if (expr.GetLeft()->GetExprType() != ExprType::IDENTIFIER) throw;
 
-			Identifier *variable = (Identifier*)expr.GetLeft().get();
+			Identifier& variable = *(Identifier*)expr.GetLeft().get();
 
 			// Line of code is a little cursed, but `Get()` returns a reference
 			// so we can assign it however we want. Have to do a little pointer
 			// trickery to force it to be a reference. Remember, this works since
 			// the memory location of the pointer is essentially `const` to us, but
 			// we can do whatever we want with the underlying value
-			m_symbols->Get(variable->GetId())->AsValue() = rightValue;
+			m_symbols->Get(variable.GetId()) = right;
 
-			return Value(rightValue).ToPtr();
+			return right;
 		}
 		case TokenType::EQUAL_EQUAL: {
 			switch (type) {
 				case ValueType::NUMBER:
-					return Value(leftValue.GetNumber() == rightValue.GetNumber()).ToPtr();
+					return Value(left->AsValue().GetNumber() == right->AsValue().GetNumber()).ToPtr();
 				case ValueType::STRING:
-					return Value(leftValue.GetString() == rightValue.GetString()).ToPtr();
+					return Value(left->AsValue().GetString() == right->AsValue().GetString()).ToPtr();
 				case ValueType::BOOL:
-					return Value(leftValue.GetBoolean() == rightValue.GetBoolean()).ToPtr();
+					return Value(left->AsValue().GetBoolean() == right->AsValue().GetBoolean()).ToPtr();
 				case ValueType::NIL:
 					// If the type is `nil` then they both must be `nil`
 					return Value(true).ToPtr();
 				case ValueType::FUNCTION:
-					// An odd case but maybe you would want to compare functions ??
-					return Value(leftValue.GetFunctionId() == rightValue.GetFunctionId()).ToPtr();
+					// An odd case but maybe you would want to compare functions, this is also super inefficient
+					// since we are comparing the strings with contains the memory address of the underlying 
+					// callable but i do not care
+					return Value(left->AsCallable().ToString() == right->AsCallable().ToString()).ToPtr();
 			}
 		}
 		case TokenType::BANG_EQUAL: {
 			switch (type) {
 				case ValueType::NUMBER:
-					return Value(leftValue.GetNumber() != rightValue.GetNumber()).ToPtr();
+					return Value(left->AsValue().GetNumber() != right->AsValue().GetNumber()).ToPtr();
 				case ValueType::STRING:
-					return Value(leftValue.GetString() != rightValue.GetString()).ToPtr();
+					return Value(left->AsValue().GetString() != right->AsValue().GetString()).ToPtr();
 				case ValueType::BOOL:
-					return Value(leftValue.GetBoolean() != rightValue.GetBoolean()).ToPtr();
+					return Value(left->AsValue().GetBoolean() != right->AsValue().GetBoolean()).ToPtr();
 				case ValueType::NIL:
 					// If the type is `nil` then they both must be `nil`
 					return Value().ToPtr();
 				case ValueType::FUNCTION:
 					// An odd case but maybe you would want to compare functions ??
-					return Value(leftValue.GetFunctionId() != rightValue.GetFunctionId()).ToPtr();
+					return Value(left->AsValue().GetFunctionId() != right->AsValue().GetFunctionId()).ToPtr();
 			}
 		}
 		case TokenType::GREATER: {
 			if (type != ValueType::NUMBER) throw; // I don't believe a string can be greater than a string
 			
-			return Value(leftValue.GetNumber() > rightValue.GetNumber()).ToPtr();
+			return Value(left->AsValue().GetNumber() > right->AsValue().GetNumber()).ToPtr();
 		}
 		case TokenType::GREATER_EQUAL:
 			if (type != ValueType::NUMBER) throw;
 			
-			return Value(leftValue.GetNumber() >= rightValue.GetNumber()).ToPtr();
+			return Value(left->AsValue().GetNumber() >= right->AsValue().GetNumber()).ToPtr();
 		case TokenType::LESS:
 			if (type != ValueType::NUMBER) throw; 
 			
-			return Value(leftValue.GetNumber() < rightValue.GetNumber()).ToPtr();
+			return Value(left->AsValue().GetNumber() < right->AsValue().GetNumber()).ToPtr();
 		case TokenType::LESS_EQUAL:
 			if (type != ValueType::NUMBER) throw; 
 			
-			return Value(leftValue.GetNumber() <= rightValue.GetNumber()).ToPtr();
+			return Value(right->AsValue().GetNumber() <= right->AsValue().GetNumber()).ToPtr();
 		case TokenType::AND: {
 			// Cannot perform `and` operation on non-boolean values
-			if (leftValue.GetType() != ValueType::BOOL || rightValue.GetType() != ValueType::BOOL) throw;
+			if (left->GetType() != ValueType::BOOL || right->GetType() != ValueType::BOOL) throw;
 
-			return Value(leftValue.GetBoolean() && leftValue.GetBoolean()).ToPtr();
+			return Value(left->AsValue().GetBoolean() && left->AsValue().GetBoolean()).ToPtr();
 		}
 		case TokenType::OR: {
 			// Cannot perform `and` operation on non-boolean values
-			if (leftValue.GetType() != ValueType::BOOL || rightValue.GetType() != ValueType::BOOL) throw;
+			if (left->GetType() != ValueType::BOOL || right->GetType() != ValueType::BOOL) throw;
 
-			return Value(leftValue.GetBoolean() || leftValue.GetBoolean()).ToPtr();
+			return Value(left->AsValue().GetBoolean() || right->AsValue().GetBoolean()).ToPtr();
 		}
 		default:
 			// Trying to do a binary operation with an invalid op
@@ -221,6 +199,8 @@ TypePtr ExpressionVisitor::visitPrimaryExpr(Primary expr) {
 }
 
 TypePtr ExpressionVisitor::visitIdentifierExpr(Identifier expr) {
+	std::cout << "On identifier\n";
+	m_symbols->PrintStack();
 	return m_symbols->Get(expr.GetId());
 }
 
@@ -253,4 +233,8 @@ bool ExpressionVisitor::isInteger(double n) {
 
 	// Goofy ahh double comparison
 	return std::fabs(n - comparison) < std::numeric_limits<double>::epsilon();
+}
+
+void ExpressionVisitor::ChangeScope(SymbolTable* table) {
+	m_symbols = table;
 }

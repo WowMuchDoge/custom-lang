@@ -31,6 +31,12 @@ TypePtr Callable::Call(StatementVisitor& visitor, SymbolTable *currentScope, std
 		m_symbolTable.Push(arg);
 	}
 
+	std::cout << "On Call (call table)\n";
+	m_symbolTable.PrintStack();
+
+	std::cout << "On Call (current table)\n";
+	currentScope->PrintStack();
+
 	visitor.ChangeScope(&m_symbolTable);
 
 	m_block->Accept(visitor);
