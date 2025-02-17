@@ -8,7 +8,7 @@
 
 class Parser {
 public:
-	Parser(std::string source) : m_scanner{source}, m_error{"", 0} {
+	Parser(std::string source) : m_scanner{source}, m_error{"", 0}, m_inCall{false} {
 		// Inserting global scope
 		m_scope.NewScope();
 
@@ -75,4 +75,8 @@ private:
 	// somewhere outside of the method where the error
 	// is thrown.
 	CompilerError m_error;
+
+	// A flag to keep track of whether we are in a call or in
+	// global scope
+	bool m_inCall;
 };

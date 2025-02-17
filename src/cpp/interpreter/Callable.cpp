@@ -18,16 +18,20 @@ TypePtr Callable::Call(StatementVisitor* visitor, SymbolTable* currentScope, std
 	// If arity isn't the same, we didn't call the function properly
 
 	if (args.size() != m_params.size()) throw;
+
+	currentScope->NewScope();
 	
 	for (TypePtr arg : args) {
 		// A little strange, but the compiler already populated the
 		// ids of the params, so as long as we evaluate and populate
-		// the args in the right order we should be all good
+		// the args in the right order we should all be good
 
-		m_symbolTable.Push(arg);
+		currentScope->Push(arg);
 	}
 
 	m_block->Accept(*visitor);
+
+	currentScope->EndScope();
 
 	return Value().ToPtr();
 }

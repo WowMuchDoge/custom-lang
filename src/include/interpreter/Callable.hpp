@@ -19,7 +19,6 @@ public:
 
 	TypePtr Call(StatementVisitor* visitor, SymbolTable* currentScope, std::vector<TypePtr> args);
 private:	
-	SymbolTable m_symbolTable;
 	StmtPtr m_block;
 	std::vector<std::string> m_params;
 };

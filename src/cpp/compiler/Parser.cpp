@@ -94,7 +94,7 @@ StmtPtr Parser::GetAst() {
 		}
 	}
 
-	return BlockStatement(program).ToPtr();
+	return BlockStatement(program, false).ToPtr();
 }
 
 StmtPtr Parser::statement() {
@@ -182,7 +182,7 @@ StmtPtr Parser::blockStatement() {
 	
 	consume(TokenType::RIGHT_BRACE, "Expected '}' after block."); 
 
-	return BlockStatement(statements).ToPtr();
+	return BlockStatement(statements, m_inCall).ToPtr();
 }
 
 StmtPtr Parser::ifStatement() {
@@ -263,7 +263,7 @@ StmtPtr Parser::forStatement() {
 
 	block.insert(block.begin(), stmt);
 	
-	StmtPtr whileStmt = WhileStatement(condition, BlockStatement(block).ToPtr()).ToPtr();
+	StmtPtr whileStmt = WhileStatement(condition, BlockStatement(block, m_inCall).ToPtr()).ToPtr();
 
 	outer.push_back(whileStmt);
 
@@ -272,7 +272,7 @@ StmtPtr Parser::forStatement() {
 	// `for (var i = 0; i < 10; i = i + 1) print(i);` would
 	// be `{ var i = 0; while (i < 10) { print(i); i = i + 1; } }
 
-	return BlockStatement(outer).ToPtr();
+	return BlockStatement(outer, m_inCall).ToPtr();
 }
 
 StmtPtr Parser::expressionStatement(bool requireSemicolon) {
@@ -286,6 +286,11 @@ StmtPtr Parser::functionDeclaration() {
 	std::string functionName = consume(TokenType::IDENTIFIER, "Expected identifier after 'fn'.").GetLiteral();
 
 	consume(TokenType::LEFT_PAREN, "Expected '(' after function name.");
+
+	// Because you can nest function declarations, at the end of this declaration we will want to
+	// revert back to what it was before instead of just setting it to false at the end
+	bool previousState = m_inCall;
+	m_inCall = true;
 
 	// Run time is going to deal with differentiating between function types and typical
 	// types like `number` since I can't declare the function type explicitly as I get
@@ -313,13 +318,15 @@ StmtPtr Parser::functionDeclaration() {
 
 	consume(TokenType::LEFT_BRACE, "Expected '{' in function declaration.");
 
-	// This will put the params in a scope that is one above the function scope
+	// This will put the params in a scope one above the function execution scope
 	StmtPtr functionBlock = blockStatement();
 
 	m_scope.EndScope();
 
+	m_inCall = previousState;
+
 	// We do a microplastic amount of (cast) trolling
-	return FunctionDeclaration(params, (*(BlockStatement*)functionBlock.get()).GetStatements()).ToPtr();
+	return FunctionDeclaration(params, *(BlockStatement*)functionBlock.get()).ToPtr();
 }
 
 StmtPtr Parser::returnStatement() {
@@ -330,6 +337,8 @@ StmtPtr Parser::returnStatement() {
 		expr = expression();
 	
 	consumeSemicolon();
+
+	if (!m_inCall) throw makeCompilerError("Cannot return from global scope.");
 
 	return ReturnStatement(expr).ToPtr();
 }

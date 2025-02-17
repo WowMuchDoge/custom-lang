@@ -61,7 +61,7 @@ private:
 
 class BlockStatement : public Stmt {
 public:	
-	BlockStatement(std::vector<StmtPtr> statements) : m_statements{statements} {}
+	BlockStatement(std::vector<StmtPtr> statements, bool isCall) : m_statements{statements}, m_isCall{isCall} {}
 	
 	void Accept(StatementVisitor& visitor);
 
@@ -72,6 +72,12 @@ public:
 	StmtPtr ToPtr();
 private:
 	std::vector<StmtPtr> m_statements;
+
+	// This is the flag for controlling whether this block is part of a function
+	// (even nested in a function) or part of the global scope. This will control
+	// if a return statement is able to return since you can't return out of global
+	// scope
+	bool m_isCall;
 };
 
 class IfObject {
@@ -152,7 +158,7 @@ public:
 	void Accept(StatementVisitor& visitor);
 
 	std::vector<std::string> GetParams() { return m_params; }
-	StmtPtr GetBlock() { return m_block.ToPtr(); }
+	BlockStatement GetBlock() { return m_block; }
 
 	StmtPtr ToPtr();
 private:
