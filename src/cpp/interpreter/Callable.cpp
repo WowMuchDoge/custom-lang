@@ -19,7 +19,7 @@ TypePtr Callable::Call(StatementVisitor* visitor, SymbolTable* currentScope, std
 
 	if (args.size() != m_params.size()) throw;
 
-	currentScope->PrintStack();
+	// currentScope->PrintStack();
 
 	ScopePair scopeDiff = currentScope->Rewind(m_scopeBorder);
 

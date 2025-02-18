@@ -45,7 +45,7 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 				throw;
 			}
 			
-			return Value(left->AsValue().GetNumber() + right->AsValue().GetNumber()).ToPtr();
+			return Value(left->AsValue().GetNumber() - right->AsValue().GetNumber()).ToPtr();
 		}
 		case TokenType::STAR: {	
 			if (type != ValueType::NUMBER) {

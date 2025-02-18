@@ -16,7 +16,7 @@ void SymbolTable::NewScope() {
 
 void SymbolTable::EndScope() {
 	while (m_table.size() - 1 > m_scopeBorders.back()) {
-		std::cout << "Popping " << m_table.back()->ToString() << std::endl;
+		// std::cout << "Popping " << m_table.back()->ToString() << std::endl;
 		m_table.pop_back();
 	}
 
@@ -44,7 +44,7 @@ ScopePair SymbolTable::Rewind(int index) {
 	std::vector<int> poppedBorders;
 	
 	for (int i = m_table.size() - 1; i > index; i--) {
-		std::cout << i << " is i, index is " << index << std::endl;
+		// std::cout << i << " is i, index is " << index << std::endl;
 		poppedVars.push_back(m_table.back());
 
 		if (m_scopeBorders.back() == i) {

@@ -33,11 +33,14 @@ void StatementVisitor::VisitIfStatement(IfStatement stmt) {
 				throw;
 			}
 
-			if (condition.GetBoolean()) obj.GetStmt()->Accept(*this);
+			bool funny = condition.GetBoolean();
+			if (condition.GetBoolean()) {
+				obj.GetStmt()->Accept(*this);
 
-			// In an if-else chain, the first condition that evaluates to
-			// true is ran and breaks out of the chain
-			break;
+				// In an if-else chain, the first condition that evaluates to
+				// true is ran and breaks out of the chain
+				break;
+			}
 		}
 	}
 }
@@ -66,6 +69,7 @@ void StatementVisitor::VisitFunctionDeclaration(FunctionDeclaration stmt) {
 void StatementVisitor::VisitReturnStatement(ReturnStatement stmt) {
 	// A touch cursed and inneficient, but this will be caught by the function
 	// and that is the value it will return
+	// std::cout << evaluate(stmt.GetExpr())->ToString() << "Evaluated\n";
 	throw evaluate(stmt.GetExpr());
 }
 
