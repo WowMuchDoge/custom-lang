@@ -19,6 +19,10 @@ TypePtr Callable::Call(StatementVisitor* visitor, SymbolTable* currentScope, std
 
 	if (args.size() != m_params.size()) throw;
 
+	currentScope->PrintStack();
+
+	ScopePair scopeDiff = currentScope->Rewind(m_scopeBorder);
+
 	currentScope->NewScope();
 	
 	for (TypePtr arg : args) {
@@ -36,6 +40,8 @@ TypePtr Callable::Call(StatementVisitor* visitor, SymbolTable* currentScope, std
 	}
 
 	currentScope->EndScope();
+
+	currentScope->PushBack(scopeDiff);
 
 	return Value().ToPtr();
 }

@@ -60,7 +60,7 @@ void StatementVisitor::VisitExpressionStatement(ExpressionStatement stmt) {
 }
 
 void StatementVisitor::VisitFunctionDeclaration(FunctionDeclaration stmt) {
-	m_table->Push(Callable(stmt.GetBlock().ToPtr(), stmt.GetParams()).ToPtr());
+	m_table->Push(Callable(stmt.GetBlock().ToPtr(), stmt.GetParams(), m_table->GetTailIndex() + 1).ToPtr());
 }
 
 void StatementVisitor::VisitReturnStatement(ReturnStatement stmt) {

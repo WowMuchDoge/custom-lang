@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 
 	std::cout << programBlock->ToString() << std::endl;
 	programBlock->Accept(sv);
-
+	
 	auto end = std::chrono::high_resolution_clock::now();
 
 	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);

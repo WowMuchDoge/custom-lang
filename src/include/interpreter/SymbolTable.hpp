@@ -4,6 +4,8 @@
 
 #include "compiler/expression/Value.hpp"
 
+typedef std::pair<std::vector<TypePtr>, std::vector<int>> ScopePair; 
+
 class SymbolTable {
 public:
 	SymbolTable() : m_scopeBorders({0}) {}
@@ -18,6 +20,13 @@ public:
 	
 	TypePtr& GetTail();
 	TypePtr& GetHead();
+
+	// Returns a pair containing the popped variables and scope borders
+	ScopePair Rewind(int index);
+	// Push back the pair returned by the `PopUntilIndex` function
+	void PushBack(ScopePair pair);
+
+	int GetTailIndex();
 
 	void PrintStack();
 private:
