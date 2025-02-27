@@ -8,7 +8,7 @@
 
 class Parser {
 public:
-	Parser(std::string source) : m_scanner{source}, m_error{"", 0}, m_inCall{false} {
+	Parser(std::string source) : m_scanner{source}, m_error{"", 0}, m_inCall{false}, m_encounteredError{false} {
 		// Inserting global scope
 		m_scope.NewScope();
 
@@ -18,6 +18,7 @@ public:
 	}
 
 	StmtPtr GetAst();
+	bool EncounteredError();
 private:
 	Token peek();
 	Token peekNext();
@@ -35,9 +36,6 @@ private:
 
 	CompilerError* makeCompilerError(std::string message);
 	CompilerError* makeCompilerError(std::string message, int line);
-
-	// If an error is encountered, we just go to the end of the expression
-	void skipStatement();
 
 	// Statements
 	StmtPtr statement();
@@ -62,6 +60,10 @@ private:
 	ExprPtr call();
 	ExprPtr primary();
 
+	// Our little method to run to the border of a statement. This
+	// allows us to keep trucking through errors
+	void synchronize();
+
 	Scanner m_scanner;
 	Token m_twoNext;
 	Token m_next;
@@ -81,4 +83,8 @@ private:
 	// and `return` is encountered, there is nothing to catch
 	// the value it throws
 	bool m_inCall;
+
+	// Flag to see if there were any errors. If so, we really
+	// do not want to allow the interpreter to start doin stuff
+	bool m_encounteredError;
 };

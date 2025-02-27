@@ -34,6 +34,7 @@ set(CPP_SOURCES ${CPP_DIR}/main.cpp
 				${INTERPRETER_DIR}/Callable.cpp
 				${ERROR_DIR}/ScannerError.cpp
 				${ERROR_DIR}/CompilerError.cpp
+				${ERROR_DIR}/InterpreterError.cpp
 )
 
 set(EXECUTABLE_NAME out)

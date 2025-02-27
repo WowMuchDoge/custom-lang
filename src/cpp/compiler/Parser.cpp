@@ -70,16 +70,14 @@ bool Parser::matchTwo(TokenType t1, TokenType t2) {
 
 CompilerError* Parser::makeCompilerError(std::string message) {
 	m_error = CompilerError(message, m_scanner.GetLine());
+	m_encounteredError = true;
 	return &m_error;
 }
 
 CompilerError* Parser::makeCompilerError(std::string message, int line) {
 	m_error = CompilerError(message, line);
+	m_encounteredError = true;
 	return &m_error;
-}
-
-void Parser::skipStatement() {
-	while (!atEnd() && advance().GetType() != TokenType::SEMICOLON);
 }
 
 StmtPtr Parser::GetAst() {
@@ -90,11 +88,15 @@ StmtPtr Parser::GetAst() {
 			program.push_back(statement());
 		} catch (CompilerError* e) {
 			e->Print();
-			skipStatement();
+			synchronize();
 		}
 	}
 
 	return BlockStatement(program, false).ToPtr();
+}
+
+bool Parser::EncounteredError() {
+	return m_encounteredError;
 }
 
 StmtPtr Parser::statement() {
@@ -174,7 +176,7 @@ StmtPtr Parser::blockStatement() {
 			statements.push_back(statement());
 		} catch (CompilerError *e) {
 			e->Print();
-			skipStatement();
+			synchronize();
 		}
 	}
 
@@ -497,4 +499,11 @@ ExprPtr Parser::primary() {
 	}
 
 	throw makeCompilerError("Unknown primary '" + peek().GetLiteral() + "'."); 
+}
+
+void Parser::synchronize() {
+	while (peek().GetType() != TokenType::SEMICOLON && peek().GetType() != TokenType::SEMICOLON)
+		advance();
+
+	advance();
 }
