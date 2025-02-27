@@ -1,5 +1,4 @@
 #include "interpreter/ExpressionVisitor.hpp"
-#include "interpreter/StatementVisitor.hpp"
 
 #include <limits>
 #include <cmath>
@@ -14,7 +13,7 @@ TypePtr ExpressionVisitor::visitBinaryExpr(Binary expr) {
 	// This ain't javascript, we ain't gonna do operations
 	// on values with different types (who the hell would
 	// want that)
-	if (left->GetType() != right->GetType()) {
+	if (expr.GetLeft()->GetExprType() != ExprType::IDENTIFIER && left->GetType() != right->GetType()) {
 		throw;
 	}
 
